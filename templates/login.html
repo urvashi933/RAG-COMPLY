@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | RAG.COMPLY</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --bg-dark: #020617; 
+            --bg-medium: #064e3b;
+            --primary-color: #10b981;
+            --secondary-color: #065f46;
+            --accent-color: #34d399;
+            --form-bg: rgba(2, 6, 23, 0.7);
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(16, 185, 129, 0.2);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --icon-color: #10b981;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+        }
+
+        #premium-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #062d1f 0%, #020617 100%);
+        }
+
+        .container { position: relative; min-height: 100vh; overflow: hidden; }
+        .row { display: flex; flex-wrap: wrap; height: 100vh; }
+        .col { width: 50%; }
+
+        .align-items-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 28rem;
+            z-index: 10;
+            transition: 0.5s ease-in-out;
+        }
+
+        .form {
+            padding: 2.5rem 2rem;
+            background-color: var(--form-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            /* Hidden by default, scaled up via JS/Classes */
+            display: none; 
+            transform: scale(0.8);
+            opacity: 0;
+            transition: .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Show logic */
+        .container.sign-in .form.sign-in { display: block; transform: scale(1); opacity: 1; }
+        .container.sign-up .form.sign-up { display: block; transform: scale(1); opacity: 1; }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin: 0.8rem 0;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%; left: 1rem;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--icon-color);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            font-size: 0.9rem;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border-radius: .75rem;
+            border: 1px solid var(--border-color);
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Space Mono', monospace; 
+        }
+
+        .input-group input:focus {
+            border: 1px solid var(--primary-color);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .form button {
+            cursor: pointer;
+            width: 100%;
+            padding: 1rem 0;
+            margin-top: 1rem;
+            border-radius: .75rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: #000;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .form button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary-color);
+        }
+
+        .form p { margin-top: 1.5rem; font-size: .85rem; color: var(--text-muted); }
+        .form p b { color: var(--primary-color); cursor: pointer; }
+
+        /* Background Sliding logic */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            height: 100vh;
+            width: 300vw;
+            transform: translate(35%, 0);
+            background-image: linear-gradient(-45deg, var(--secondary-color) 0%, #020617 100%);
+            transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            z-index: 6;
+            border-bottom-right-radius: max(50vw, 50vh);
+            border-top-left-radius: max(50vw, 50vh);
+        }
+
+        .container.sign-in::before { transform: translate(0, 0); right: 50%; }
+        .container.sign-up::before { transform: translate(100%, 0); right: 50%; }
+
+        .content-row {
+            position: absolute;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 6;
+            width: 100%;
+        }
+
+        .text { color: var(--text-main); padding: 2rem; }
+        .text h2 { font-size: 3.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .text p { font-weight: 300; color: var(--text-muted); }
+
+        .text.sign-in h2, .text.sign-in p { transform: translateX(-250%); transition: 1s ease-in-out; }
+        .text.sign-up h2, .text.sign-up p { transform: translateX(250%); transition: 1s ease-in-out; }
+        .container.sign-in .text.sign-in h2, .container.sign-in .text.sign-in p,
+        .container.sign-up .text.sign-up h2, .container.sign-up .text.sign-up p { transform: translateX(0); }
+
+        @media only screen and (max-width: 768px) {
+            .col { width: 100%; }
+            .container::before { display: none; }
+            .text h2 { font-size: 2rem; }
+            .row { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="premium-bg"></canvas>
+
+    <main>
+        <div id="container" class="container">
+            <div class="row">
+                <div class="col align-items-center flex-col">
+                    <div class="form-wrapper align-items-center">
+                        <div class="form sign-up">
+                            <h2 style="color:white; margin-bottom: 1rem;">Create Account</h2>
+                            <form action="/login" method="POST">
+                                <div class="input-group">
+                                    <i class='bx bxs-user-detail'></i>
+                                    <input id="fullname" name="fullname" type="text" placeholder="Full Name" required>
+                                </div>
+                                <div class="input-group">
+                                    <i class='bx bxs-user'></i>
+                                    <input id="username" name="username" type="text" placeholder="Username" required>
+                                </div>
+                                <div class="input-group">
+                                    <i class='bx bx-mail-send'></i>
+                                    <input id="email" name="email" type="email" placeholder="Email" required>
+                                </div>
+                                <div class="input-group">
+                                    <i class='bx bxs-lock-alt'></i>
+                                    <input id="password" name="password" type="password" placeholder="Password" required>
+                                </div>
+                                <button type="submit">Initialize Node</button>
+                            </form>
+                            <p>
+                                <span>Already authorized?</span>
+                                <b onclick="toggle()">Sign in here</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col align-items-center flex-col">
+                    <div class="form-wrapper align-items-center">
+                        <div class="form sign-in">
+                            <h2 style="color:white; margin-bottom: 1rem;">Welcome Back</h2>
+                            <form action="/login" method="POST">
+                                <div class="input-group">
+                                    <i class='bx bxs-user'></i>
+                                    <input id="username" name="username" type="text" placeholder="Username" required>
+                                </div>
+                                <div class="input-group">
+                                    <i class='bx bxs-lock-alt'></i>
+                                    <input id="password" name="password" type="password" placeholder="Password" required>
+                                </div>
+                                <button type="submit">Access System</button>
+                            </form>
+                            <p><b class="pointer">Forgot encryption key?</b></p>
+                            <p>
+                                <span>New to the network?</span>
+                                <b onclick="toggle()">Create an account</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row content-row">
+                <div class="col align-items-center flex-col">
+                    <div class="text sign-in">
+                        <h2>RAG.COMPLY</h2>
+                        <p>Securing AI workflows through automated compliance mapping.</p>
+                    </div>
+                </div>
+                <div class="col align-items-center flex-col">
+                    <div class="text sign-up">
+                        <h2>JOIN NETWORK</h2>
+                        <p>Establish your node and begin compliance validation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let container = document.getElementById('container');
+        
+        // Toggle Function
+        const toggle = () => {
+            container.classList.toggle('sign-in');
+            container.classList.toggle('sign-up');
+        }
+
+        // Initialize with sign-in
+        setTimeout(() => { container.classList.add('sign-in'); }, 200);
+
+        // --- BACKGROUND ANIMATION ---
+        const canvas = document.getElementById("premium-bg");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener("mousemove", (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    speedY: (Math.random() - 0.5) * 0.4,
+                    opacity: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.speedX; p.y += p.speedY;
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+                ctx.fillStyle = `rgba(16, 185, 129, ${p.opacity})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 150) {
+                        ctx.strokeStyle = `rgba(16, 185, 129, ${0.1 - dist/1500})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener("resize", init);
+        init();
+        animate();
+    </script>
+</body>
+</html>
