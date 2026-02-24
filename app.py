@@ -46,6 +46,26 @@ def signup():
             if not (fullname and username and email and password):
                 flash('Please fill all required fields for registration.', 'error')
                 return redirect(url_for('signup'))
+              #validations
+            if not fullname or len(fullname.strip())<2:
+                flash('Name must be at least 2 characters long.', 'error')
+                return redirect(url_for('signup'))
+        
+            if not email or '@' not in email:
+                flash('Please enter a valid email address.', 'error')
+                return redirect(url_for('signup'))
+        
+            #password must be at least 8 characters long and a combination of letters and numbers and special characters
+            if len(password)<8 or not any(char.isdigit() for char in password)\
+              or not any(char.isalpha() for char in password) or not any(not char.isalnum()\
+                                                                          for char in password):
+                flash('Password must be at least 8 characters long and contain letters, \
+                  numbers, and special characters.', 'error')
+                return redirect(url_for('signup'))
+        
+            if password != confirm_password:
+                flash('Passwords do not match.', 'error')
+                return redirect(url_for('signup'))
 
             # Check if user already exists
             existing_user = User.query.filter_by(username=username).first()
