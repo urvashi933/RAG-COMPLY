@@ -4,7 +4,7 @@
 # main server file :typos leads to issues in running server
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
-from flask import Flask, render_template, request, redirect, url_for,flash
+from flask import Flask, render_template, request, redirect, url_for,flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash 
 
@@ -107,6 +107,8 @@ def signup():
 
             user = User.query.filter_by(username=username).first()
             if user and check_password_hash(user.password_hash, password):
+                session["user_id"]=user.id
+                session["user_name"]=user.username
                 flash('Login successful!', 'success')
                 return redirect(url_for('home'))
             else:
