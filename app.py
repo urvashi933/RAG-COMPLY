@@ -7,6 +7,7 @@
 from flask import Flask, render_template, request, redirect, url_for,flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash 
+from functools import wraps
 
 app= Flask(__name__)
 
@@ -46,16 +47,8 @@ def signup():
             if not (fullname and username and email and password):
                 flash('Please fill all required fields for registration.', 'error')
                 return redirect(url_for('signup'))
-              #validations
-            if not fullname or len(fullname.strip())<2:
-                flash('Name must be at least 2 characters long.', 'error')
-                return redirect(url_for('signup'))
-        
-            if not email or '@' not in email:
-                flash('Please enter a valid email address.', 'error')
-                return redirect(url_for('signup'))
-        
-            #password must be at least 8 characters long and a combination of letters and numbers and special characters
+            
+             #password must be at least 8 characters long and a combination of letters and numbers and special characters
             if len(password)<8 or not any(char.isdigit() for char in password)\
               or not any(char.isalpha() for char in password) or not any(not char.isalnum()\
                                                                           for char in password):
@@ -117,9 +110,29 @@ def signup():
 
     return render_template("login.html")
 
-# @app.route('/login') # login page
-# def signin():
-#     return render_template("login.html")
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'error')
+            return redirect(url_for('signup'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/assistant') # assistant page
+@login_required
+def assistant():
+    return render_template("assistant.html")
+
+@app.route('/aboutUs') # overview page
+def aboutUs():
+    return render_template("aboutUs.html")
+
+@app.route('/logout') # logout route
+def logout():  
+    session.clear()  # Clear all session data
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('signup'))
 
 if __name__=='__main__':
     app.run(debug=True)
