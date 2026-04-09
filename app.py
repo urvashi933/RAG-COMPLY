@@ -4,14 +4,26 @@
 # main server file :typos leads to issues in running server
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
-from flask import Flask, render_template, request, redirect, url_for,flash, session
+from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash 
 from functools import wraps
 
+from datetime import datetime
+from utils.rag_pipeline import rag_answer
+
+from database import init_db, SessionLocal
+from models import QuestionHistory,UnansweredQuestion,User
+
 app= Flask(__name__)
 
-app.secret_key ='secret_key' # secret key for session management and flash messages
+app.secret_key ='supersecretkey' # secret key for session management and flash messages
+
+print(" init db created")
+init_db()
+
+admin_bp=Blueprint('admin',__name__)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -26,6 +38,17 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all() # creates the database and tables based on the defined models. It ensures that the database is set up before any operations are performed on it. This is necessary because SQLAlchemy needs to know about the application context to create the tables correctly.
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # use session.get for clarity and allow redirect back after login
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            # include next so user returns to original page after signing in
+            return redirect(url_for('signup',next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # you need to route between pages to view them
 @app.route('/') # default page i.e. home page
@@ -110,14 +133,6 @@ def signup():
 
     return render_template("login.html")
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash('Please log in to access this page.', 'error')
-            return redirect(url_for('signup'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 @app.route('/assistant') # assistant page
 @login_required
@@ -128,11 +143,67 @@ def assistant():
 def aboutUs():
     return render_template("aboutUs.html")
 
-@app.route('/logout') # logout route
-def logout():  
-    session.clear()  # Clear all session data
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('signup'))
+# ---------------- SIGNOUT ----------------
+@app.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    flash('Logged out successfully','success')
+    return redirect(url_for('signin'))
+# ---------------- RAG ----------------
+@app.route('/rag', methods=['GET', 'POST'])
+@login_required
+def rag_assistant():
+    answer = None
+    sources = []
+    if request.method == "POST":
+        query = request.form.get("query")
+        sector = request.form.get("sector")
+        # pass the current logged-in user's id into the RAG pipeline
+        user_id = session.get('user_id')
+        result = rag_answer(query, sector, user_id)
+        answer = result["answer"]
+        sources = result["sources"]
+    return render_template(
+        "rag_assistant.html",
+        answer=answer,
+        sources=sources
+    )
+# ---------------- ADMIN ----------------
+@admin_bp.route("/admin")
+@login_required
+def view_unanswered():
+    db = SessionLocal()
+    questions = (
+        db.query(UnansweredQuestion)
+        .order_by(UnansweredQuestion.timestamp.desc())
+        .all()
+    )
+    db.close()
+    return render_template("admin.html", questions=questions)
+app.register_blueprint(admin_bp)
+# ---------------- HISTORY API ----------------
+@app.route("/history", methods=["GET"])
+@login_required
+def get_question_history():
+    db = SessionLocal()
+    questions = (
+        db.query(QuestionHistory)
+        .order_by(QuestionHistory.id.desc())
+        .limit(20)
+        .all()
+    )
+    db.close()
+    return jsonify([
+        {
+            "id": q.id,
+            "question": q.question,
+            "sector": q.sector,
+            "timestamp": q.timestamp
+        }
+        for q in questions
+    ])
+# ---------------- RUN ----------------
 
 if __name__=='__main__':
     app.run(debug=True)
