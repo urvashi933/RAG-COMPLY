@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 from datetime import datetime
-from utils.rag_pipeline import rag_answer
+from utils.rag_pipeline import multi_agent_rag
 
 from database import init_db, SessionLocal
 from models import QuestionHistory,UnansweredQuestion,User
