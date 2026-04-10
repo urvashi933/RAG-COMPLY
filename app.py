@@ -143,6 +143,10 @@ def assistant():
 def aboutUs():
     return render_template("aboutUs.html")
 
+@app.route('/contact') # overview page
+def contact():
+    return render_template("contact.html")
+
 # ---------------- SIGNOUT ----------------
 @app.route('/logout')
 @login_required
