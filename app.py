@@ -161,7 +161,7 @@ def rag_assistant():
         sector = request.form.get("sector")
         # pass the current logged-in user's id into the RAG pipeline
         user_id = session.get('user_id')
-        result = rag_answer(query, sector, user_id)
+        result = multi_agent_rag(query, sector, user_id)
         answer = result["answer"]
         sources = result["sources"]
     return render_template(
