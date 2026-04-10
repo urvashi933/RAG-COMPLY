@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contact | RAG.COMPLY</title>
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #050807;
+    color: white;
+}
+
+/* ===== NAVBAR ===== */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+}
+
+/* CENTER LINKS */
+.nav-center {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex: 1;  /* THIS FIXES ALIGNMENT */
+}
+
+/* RIGHT SIDE */
+.nav-right {
+    display: flex;
+    gap: 15px;
+}
+
+.login-btn {
+    padding: 10px 24px;
+    border-radius: 14px;
+
+    /* border */
+    border: 1px solid rgba(0, 255, 150, 0.5);
+
+    /* text */
+    color: #00ff9c;
+    text-decoration: none;
+    font-weight: 500;
+
+    /* glass effect */
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+
+    /* glow */
+    box-shadow: 0 0 10px rgba(0, 255, 150, 0.2);
+
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: rgba(0, 255, 150, 0.1);
+    box-shadow: 
+        0 0 12px rgba(0, 255, 150, 0.4),
+        0 0 20px rgba(0, 255, 150, 0.2);
+
+    transform: translateY(-1px);
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 22px;
+    background: linear-gradient(90deg, #00ff9c, #00cc7a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* glow effect */
+    text-shadow: 0 0 8px rgba(0, 255, 150, 0.6);
+}
+
+.nav-center a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #ccc;
+    transition: 0.3s;
+}
+
+.nav-center a:hover {
+    color: #00ff9c;
+}
+
+/* ===== MAIN SECTION ===== */
+.container {
+    display: flex;
+    padding: 60px;
+    gap: 50px;
+}
+
+/* LEFT */
+.left {
+    flex: 1;
+}
+
+.left h1 {
+    font-size: 42px;
+}
+
+.left p {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+/* INFO CARDS */
+.card {
+    background: rgba(20, 30, 25, 0.6);
+    border: 1px solid rgba(0,255,150,0.15);
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(8px);
+}
+
+/* RIGHT FORM */
+.right {
+    flex: 1;
+    background: rgba(20, 30, 25, 0.6);
+    border: 1px solid rgba(0,255,150,0.2);
+    padding: 30px;
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #0b0f0d;
+    color: white;
+}
+
+textarea {
+    height: 130px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #00ff9c, #00cc7a);
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* SUCCESS MESSAGE */
+.success {
+    color: #00ff9c;
+    margin-top: 10px;
+    display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+    <div class="logo">RAG.COMPLY</div>
+
+    <div class="nav-center">
+        <a href="/">Home</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="/aboutUs">About Us</a>
+        <a href="/contact">Contact</a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/login" class="login-btn">Login</a>
+        <button>Get Started</button>
+    </div>
+
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="left">
+        <h1>Get in touch</h1>
+        <p>Have questions or ready to transform your business with AI automation?</p>
+
+        <div class="card">📧 Email us<br><small>your@email.com</small></div>
+        <div class="card">📞 Call us<br><small>+91 XXXXX XXXXX</small></div>
+        <div class="card">📍 Location<br><small>India</small></div>
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="right">
+        <form id="contactForm">
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <textarea placeholder="Message"></textarea>
+
+            <button type="submit">Submit</button>
+            <div class="success">Message sent successfully 🚀</div>
+        </form>
+    </div>
+
+</div>
+
+<!-- ===== JS ===== -->
+<script>
+document.getElementById("contactForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    document.querySelector(".success").style.display = "block";
+});
+</script>
+
+</body>
+</html>
