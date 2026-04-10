@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Admin – Unanswered Questions{% endblock %}
+
+{% block css %}
+<style>
+  :root { --primary:#6b7280; --cream-bg:linear-gradient(135deg, #d1d5db, #9ca3af); --cream-card:#f9fafb; --text-main:#374151; --text-muted:#6b7280; --border-light:#d1d5db; --sidebar-width:320px; }
+  .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;background:var(--cream-card);border-right:1px solid var(--border-light);box-shadow:2px 0 12px rgba(0,0,0,0.08);z-index:1000;transition:transform .3s;overflow-y:auto}
+  .sidebar.closed{transform:translateX(-100%)}
+  .sidebar-header{padding:24px 20px;border-bottom:1px solid var(--border-light)}
+  .sidebar-title{font-size:1.1rem;font-weight:600;margin:0 0 12px 0;color:var(--text-main)}
+  .sidebar-count{background:var(--primary);color:#fff;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:500}
+  .history-list{padding:0;margin:0;list-style:none}
+  .history-item{padding:14px 20px;border-bottom:1px solid #f8fafc;cursor:pointer;transition:all .2s;font-size:.9rem}
+  .history-item:hover{background:rgba(37,99,235,.06);color:var(--primary)}
+  .sidebar-toggle{width:160px;color:#1e293b;position:fixed;top:64px;left:0;z-index:1100;background:var(--cream-card);border:1px solid var(--border-light);border-radius:10px;padding:12px 16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.12);transition:all .2s;font-size:1rem;font-weight:600}
+  .sidebar-toggle.closed{left:calc(var(--sidebar-width) + 20px)}
+  .sidebar-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.4);z-index:999;opacity:0;visibility:hidden;transition:all .3s}
+  .sidebar-overlay.active{opacity:1;visibility:visible}
+  .page-wrap{min-height:80vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;max-width:1200px;margin:0 auto}
+  .rag-card{width:100%;max-width:1000px;background:var(--cream-card);border-radius:16px;padding:32px;border:1px solid var(--border-light);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+  .admin-table{width:100%;border-collapse:collapse}
+  .admin-table th,.admin-table td{padding:12px 10px;text-align:left;border-bottom:1px solid #f1f5f9}
+  .admin-table thead th{background:#fbfaf8;font-weight:600}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  
+    
+
+
+    {% if questions %}
+      <!-- Toggle Button -->
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">📋 Unanswered</button>
+
+      <!-- Overlay -->
+      <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+      <!-- Sidebar -->
+      <div class="sidebar closed" id="sidebar">
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">Unanswered Questions</h3>
+          <span class="sidebar-count" id="historyCount">{{ questions|length }}</span>
+        </div>
+        <ul class="history-list" id="historyList">
+          {% if questions %}
+            {% for q in questions %}
+              <li class="history-item" data-index="{{ loop.index0 }}">
+                <div style="font-weight:600;">{{ q.question|truncate(80) }}</div>
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-top:6px;">{{ q.timestamp[:19].replace('T',' ') }}</div>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li style="padding:18px;color:#9ca3af;text-align:center;">No unanswered questions</li>
+          {% endif %}
+        </ul>
+      </div>
+
+      
+ {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+let sidebarOpen=false;
+function toggleSidebar(){sidebarOpen=!sidebarOpen;document.getElementById('sidebar').classList.toggle('closed',!sidebarOpen);document.getElementById('sidebarOverlay').classList.toggle('active',sidebarOpen);document.getElementById('sidebarToggle').classList.toggle('closed',sidebarOpen)}
+function closeSidebar(){sidebarOpen=false;document.getElementById('sidebar').classList.add('closed');document.getElementById('sidebarOverlay').classList.remove('active');document.getElementById('sidebarToggle').classList.remove('closed')}
+document.addEventListener('DOMContentLoaded',()=>{const items=document.querySelectorAll('#historyList .history-item');items.forEach(it=>{it.addEventListener('click',()=>{const idx=it.getAttribute('data-index');const row=document.getElementById('q-row-'+idx);if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.style.background='rgba(37,99,235,0.06)';setTimeout(()=>row.style.background='',2000)}closeSidebar()})})});
+</script>
+{% endblock %}

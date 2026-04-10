@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}RAG Assistant{% endblock %}
+
+{% block css %}
+<style>
+  
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Toggle Button -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+  📋 History
+</button>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3 class="sidebar-title">Question History</h3>
+    <span class="sidebar-count" id="historyCount">0</span>
+  </div>
+  <ul class="history-list" id="historyList"></ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+  <div class="page-wrap">
+    <div class="rag-card">
+      <div class="rag-header">
+        <h1 class="rag-title">RAG‑based Consultancy Assistant</h1>
+        <p class="rag-subtitle">Ask domain‑specific questions and get grounded answers with sources</p>
+      </div>
+
+      <div class="rag-layout">
+        <!-- Form Panel -->
+        <div class="panel">
+          <form method="POST">
+            <div class="field-group">
+              <label for="sector">Sector</label>
+              <select id="sector" name="sector" required>
+                <option value="legal">Legal consultancy</option>
+                <option value="workforce">Workforce consultancy</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="query">Your query</label>
+              <textarea
+                id="query"
+                name="query"
+                placeholder="Describe your question with enough context..."
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" onclick="startSimulation()">
+              <span id="btnText">Get AI Answer</span>
+            </button>
+
+            <!-- Agent Simulation Overlay (Hidden by default) -->
+            <div id="agentOverlay" class="agent-simulation" style="display:none;">
+              <div class="agent-step" id="step1">🤖 Agent 1: Classifying Query...</div>
+              <div class="agent-step" id="step2">🔍 Agent 2: Researching Vector DB...</div>
+              <div class="agent-step" id="step3">✍️ Agent 3: Synthesizing Answer...</div>
+              <div class="loader-bar"><div class="loader-progress"></div></div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Answer Panel -->
+        <div class="panel">
+          <div class="answer-header">
+            <h2 class="answer-title">Answer</h2>
+            <span class="answer-meta">Model output</span>
+          </div>
+
+          {% if answer %}
+            <div class="answer-box">
+              <p>{{ answer }}</p>
+
+              {% if sources %}
+                <h3>Sources</h3>
+                <ul>
+                  {% for source in sources %}
+                    <li>{{ source }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-state-icon">💭</div>
+              <p>No response yet. Submit a query to see the generated answer and sources here.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+function startSimulation() {
+  const btn = document.getElementById('submitBtn');
+  const overlay = document.getElementById('agentOverlay');
+  const steps = [
+    document.getElementById('step1'),
+    document.getElementById('step2'),
+    document.getElementById('step3')
+  ];
+
+  btn.disabled = true;
+  document.getElementById('btnText').textContent = "Processing...";
+  overlay.style.display = 'block';
+
+  let currentStep = 0;
+  const interval = setInterval(() => {
+    if (currentStep < steps.length) {
+      steps[currentStep].classList.add('active-step');
+      currentStep++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 800);
+}
+
+let sidebarOpen = false;
+// ... rest of scripts
+
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('closed', !sidebarOpen);
+  document.getElementById('sidebarOverlay').classList.toggle('active', sidebarOpen);
+  document.getElementById('mainContent').classList.toggle('sidebar-open', sidebarOpen);
+  document.getElementById('sidebarToggle').classList.toggle('closed', sidebarOpen);
+}
+
+function closeSidebar() {
+  sidebarOpen = false;
+  document.getElementById('sidebar').classList.add('closed');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+  document.getElementById('mainContent').classList.remove('sidebar-open');
+  document.getElementById('sidebarToggle').classList.remove('closed');
+}
+
+function loadHistory() {
+  fetch("/history")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("historyList");
+      const count = document.getElementById("historyCount");
+      
+      list.innerHTML = "";
+      
+      if (data.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No history yet";
+        li.style.color = "#9ca3af";
+        li.style.textAlign = "center";
+        list.appendChild(li);
+      } else {
+        data.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "history-item";
+          li.innerHTML = `<div class="history-preview" title="${item.question}">${item.question}</div>`;
+          
+          li.onclick = () => {
+            document.getElementById("query").value = item.question;
+            document.getElementById("sector").value = item.sector;
+            closeSidebar();
+          };
+          
+          list.appendChild(li);
+        });
+      }
+      
+      count.textContent = data.length;
+    })
+    .catch(err => console.error('Error loading history:', err));
+}
+
+// Load history on page load
+document.addEventListener('DOMContentLoaded', loadHistory);
+
+// Close sidebar on window resize (desktop)
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 1024) {
+    closeSidebar();
+  }
+});
+</script>
+{% endblock %}
