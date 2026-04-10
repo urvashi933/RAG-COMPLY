@@ -172,6 +172,14 @@
         .container.sign-in .text.sign-in h2, .container.sign-in .text.sign-in p,
         .container.sign-up .text.sign-up h2, .container.sign-up .text.sign-up p { transform: translateX(0); }
 
+        .error-alert {
+            background: rgba(239, 68, 68, 0.9) !important;
+        }
+
+        .success-alert {
+            background: rgba(16, 185, 129, 0.9) !important;
+        }
+
         @media only screen and (max-width: 768px) {
             .col { width: 100%; }
             .container::before { display: none; }
@@ -191,7 +199,7 @@
               {% if messages %}
                 <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 100%; max-width: 400px;">
                   {% for category, message in messages %}
-                    <div style="padding: 15px; margin-bottom: 10px; border-radius: 10px; background: {% if category == 'error' %}rgba(239, 68, 68, 0.9){% else %}rgba(16, 185, 129, 0.9){% endif %}; color: white; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div {% if category == 'error' %}style="padding: 15px; margin-bottom: 10px; border-radius: 10px; background: rgba(239, 68, 68, 0.9); color: white; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);" class="error-alert"{% else %}style="padding: 15px; margin-bottom: 10px; border-radius: 10px; background: rgba(16, 185, 129, 0.9); color: white; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);" class="success-alert"{% endif %}>
                       {{ message }}
                     </div>
                   {% endfor %}
