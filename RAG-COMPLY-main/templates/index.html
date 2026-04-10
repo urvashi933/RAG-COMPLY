@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG.COMPLY | AI Ecosystem</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --primary-neon: #10b981; 
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(16, 185, 129, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-neon);
+            letter-spacing: -1px;
+            text-decoration: none;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-links {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links:hover {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* --- HERO SECTION (3D VIDEO BG) --- */
+        .hero {
+        position: relative;
+        height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center; /* Centers content vertically */
+        justify-content: flex-start; /* Pushes content to the left */
+        padding: 0 8%; /* Keeps text away from the very edge */
+        overflow: hidden;
+    }
+
+    .hero-video-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -1;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+    }
+
+    /* Adds a dark tint so text is readable over the video */
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            rgba(5, 5, 5, 0.9) 0%, 
+            rgba(5, 5, 5, 0.4) 50%, 
+            transparent 100%);
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: left; /* Align text to the left */
+        max-width: 650px; /* Prevents text from stretching too far right */
+    }
+
+    .hero-content h1 {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        color: var(--text-main);
+    }
+
+    .hero-content h1 span {
+        color: var(--primary-neon);
+        text-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .hero-content p {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            justify-content: center; /* Center text on mobile for better fit */
+            text-align: center;
+        }
+        .hero-content {
+            text-align: center;
+        }
+    }
+        /* --- FEATURES (ANIMATED GLASS BLOCKS) --- */
+        .section { padding: 120px 8%; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 50px;
+        }
+
+        .glass-block {
+            background: var(--glass);
+            padding: 3rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            transition: 0.5s ease;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .glass-block:hover {
+            transform: translateY(-15px);
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* --- WORKFLOW (VIDEO AS ANIMATION) --- */
+        .workflow-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .workflow-visual {
+        position: relative;
+        border-radius: 2rem;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        min-height: 420px;   /* IMPORTANT */
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        transform: perspective(1200px) rotateY(-6deg);
+        transition:.6s;
+        }
+
+
+       .workflow-video{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+        .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Tightened gap for 4 items */
+}
+
+.step-item {
+    padding: 1.2rem;
+    background: var(--glass);
+    border-left: 4px solid var(--primary-neon);
+    border-radius: 0 1rem 1rem 0;
+    transition: 0.3s ease;
+}
+
+.step-item:hover {
+    background: rgba(16, 185, 129, 0.05);
+    transform: translateX(10px);
+}
+
+        /* --- BUTTONS --- */
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary-neon);
+            color: var(--primary-neon);
+            background: transparent;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: scale(1.05);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 60px 8%;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 1024px) {
+            .nav-center { display: none; }
+            .workflow-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">RAG.COMPLY</a>
+        
+        <div class="nav-center">
+            <a href="#hero" class="nav-links">Home</a>
+            <a href="#features" class="nav-links">Features</a>
+            <a href="#workflow" class="nav-links">Workflow</a>
+            <a href="/aboutUs" class="nav-links">About Us</a>
+            <a href="/contact" class="nav-links">Contact</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="#" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+   <section id="hero" class="hero">
+    <video class="hero-video-bg" autoplay muted loop playsinline>
+        <source src="/static/videos/HERO.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <h1>
+            Autonomous<br>
+            <span>AI Governance</span>
+        </h1>
+
+        <p>
+            Interactive RAG verification and node-based compliance mapping. 
+            Secure your neural mesh with automated protocol enforcement.
+        </p>
+
+        <div class="hero-btns">
+            <a href="#features" class="btn btn-primary">Initialize System</a>
+            <a href="/login" class="btn btn-outline" style="margin-left: 10px;">Access Portal</a>
+        </div>
+    </div>
+</section>
+
+    <section id="features" class="section">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2>System Logic</h2>
+            <p style="color: var(--text-muted)">Architected for neural-path integrity.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="glass-block">
+                <i class="fas fa-network-wired" style="color: var(--primary-neon); font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h3>Interactive Mesh</h3>
+                <p style="color: var(--text-muted)">Visualize every data node connection in a high-fidelity 3D workspace.</p>
+            </div>
+            <div class="glass-block" style="animation-delay: 1s;">
+                <i class="fas fa-shield-halved" style="color: var(--primary-neon); font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h3>Active Guardrails</h3>
+                <p style="color: var(--text-muted)">Automated protocol enforcement that prevents hallucinations in real-time.</p>
+            </div>
+            <div class="glass-block" style="animation-delay: 2s;">
+                <i class="fas fa-microchip" style="color: var(--primary-neon); font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h3>Edge Indexing</h3>
+                <p style="color: var(--text-muted)">Distributed processing nodes that ensure zero-latency compliance checks.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="workflow" class="section" style="background: rgba(16, 185, 129, 0.01);">
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <h2 style="font-size: 2.5rem; font-weight: 800;">RAG Workflow</h2>
+        <p style="color: var(--text-muted)">The technical lifecycle of a compliant AI query.</p>
+    </div>
+
+    <div class="workflow-container">
+        <div class="workflow-visual">
+            <video class="workflow-video" autoplay muted loop playsinline>
+                <source src="/static/videos/workflow.mp4" type="video/mp4">
+            </video>
+            <div style="position:absolute; top:20px; left:20px; background:rgba(16,185,129,0.2); padding:5px 12px; border-radius:20px; font-size:0.7rem; font-family:'Space Mono'; border:1px solid var(--primary-neon);">
+                ● NEURAL MESH ACTIVE
+            </div>
+        </div>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
+                    <span style="color: var(--primary-neon); font-family: 'Space Mono'; font-weight: 800;">01</span>
+                    <h4 style="margin: 0;">Knowledge Ingestion</h4>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Raw data is chunked and processed from your secure knowledge base.</p>
+            </div>
+
+            <div class="step-item">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
+                    <span style="color: var(--primary-neon); font-family: 'Space Mono'; font-weight: 800;">02</span>
+                    <h4 style="margin: 0;">Vector Embedding</h4>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Chunks are converted into high-dimensional vectors for semantic search.</p>
+            </div>
+
+            <div class="step-item">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
+                    <span style="color: var(--primary-neon); font-family: 'Space Mono'; font-weight: 800;">03</span>
+                    <h4 style="margin: 0;">Semantic Retrieval</h4>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">The system retrieves the most relevant context based on the user query.</p>
+            </div>
+
+            <div class="step-item">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
+                    <span style="color: var(--primary-neon); font-family: 'Space Mono'; font-weight: 800;">04</span>
+                    <h4 style="margin: 0;">Augmented Generation</h4>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">The LLM synthesizes a compliant response using the retrieved evidence.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+         <footer>
+        <div class="logo"><i class="fas fa-layer-group"></i> RAG<span>.COMPLY</span></div>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">&copy; 2026 AI Compliance Infrastructure.</p>
+        <div style="display: flex; gap: 1.5rem; font-size: 1.2rem; color: var(--text-muted);">
+            <i class="fab fa-github" style="cursor: pointer;"></i>
+            <i class="fab fa-twitter" style="cursor: pointer;"></i>
+            <i class="fab fa-linkedin" style="cursor: pointer;"></i>
+        </div>
+    </footer>
+</body>
+</html>

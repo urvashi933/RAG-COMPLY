@@ -1,0 +1,1 @@
+A Retrieval-Augmented Generation (RAG) based system that combines semantic search with LLMs to deliver document-grounded startup compliance guidance. Uses verified regulatory sources to provide accurate, explainable, and trustworthy responses for informed decision-making.

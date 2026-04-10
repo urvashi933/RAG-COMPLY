@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | RAG.COMPLY</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --primary-neon: #10b981; 
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(16, 185, 129, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            /* Subtle grid background to match the tech vibe */
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-neon);
+            letter-spacing: -1px;
+            text-decoration: none;
+        }
+
+        .nav-center { display: flex; gap: 3rem; }
+        .nav-links {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .nav-links:hover, .nav-links.active {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+
+        /* --- BUTTONS --- */
+        .btn {
+            padding: 0.8rem 1.8rem; border-radius: 0.75rem; text-decoration: none;
+            font-weight: 700; transition: 0.3s; display: inline-block; font-size: 0.9rem;
+        }
+        .btn-primary { background: var(--primary-neon); color: var(--bg-dark); }
+        .btn-outline { border: 1px solid var(--primary-neon); color: var(--primary-neon); background: transparent; }
+        .btn:hover { box-shadow: 0 0 20px var(--accent-glow); transform: scale(1.05); }
+
+        /* --- ABOUT US SPECIFIC STYLES --- */
+        .section { padding: 150px 8% 100px; max-width: 1400px; margin: 0 auto; }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 8rem;
+        }
+
+        .mission-text h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .mission-text span {
+            color: var(--primary-neon);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .mission-text p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Abstract 3D Visual */
+        .abstract-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+        }
+        
+        .orbit-1 {
+            width: 300px; height: 300px; border-radius: 50%;
+            border: 1px dashed var(--primary-neon);
+            animation: abstract-spin 15s infinite linear;
+            position: absolute; opacity: 0.5;
+        }
+
+        .orbit-2 {
+            width: 200px; height: 200px; border-radius: 50%;
+            border: 2px solid var(--primary-neon);
+            animation: abstract-spin 10s infinite reverse linear;
+            position: absolute; box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        @keyframes abstract-spin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(1); } }
+
+        /* --- AI CHAT SECTION --- */
+/* --- UPGRADED AI CHAT SECTION --- */
+        .chat-container {
+            max-width: 850px;
+            margin: 0 auto 6rem;
+            background: rgba(10, 15, 20, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(16, 185, 129, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Scanning Laser Line */
+        .chat-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+            animation: scanline 3s linear infinite;
+            box-shadow: 0 0 15px var(--primary-neon);
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .chat-header { text-align: center; margin-bottom: 2rem; }
+        .chat-header h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        
+        .chat-box {
+            height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding-right: 1rem;
+            margin-bottom: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+        .chat-box::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 10px; }
+
+        .msg-wrapper {
+            display: flex; gap: 1rem; align-items: flex-end;
+            opacity: 0;
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-wrapper.user { flex-direction: row-reverse; }
+
+        .avatar-small {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .avatar-ai { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary-neon); color: var(--primary-neon); }
+        .avatar-user { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); }
+
+        .msg-bubble {
+            max-width: 75%; padding: 1rem 1.2rem; border-radius: 1.2rem;
+            font-size: 0.95rem; line-height: 1.6; letter-spacing: 0.3px;
+        }
+
+        .msg-bubble.ai {
+            background: linear-gradient(135deg, rgba(5, 15, 10, 0.9), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-bottom-left-radius: 0;
+        }
+
+        .msg-bubble.user {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-right-radius: 0;
+        }
+
+        .chat-input-area { display: flex; gap: 1rem; position: relative; }
+        .chat-input {
+            flex: 1; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border);
+            padding: 1.2rem 1.5rem; border-radius: 1rem; color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; transition: 0.3s;
+            font-size: 1rem;
+        }
+        .chat-input:focus { border-color: var(--primary-neon); box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); }
+
+        /* Typing Indicator Animation */
+        .typing-dots { display: flex; gap: 4px; align-items: center; height: 20px; }
+        .dot { width: 6px; height: 6px; background: var(--primary-neon); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); box-shadow: 0 0 10px var(--primary-neon); } }
+        /* Team Cards */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 3rem;
+        }
+
+        .team-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            transition: 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hover sweep effect */
+        .team-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+            transition: 0.5s;
+        }
+        .team-card:hover::before { left: 100%; }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-neon);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: rgba(5, 5, 5, 0.8);
+            border: 2px solid var(--primary-neon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-neon);
+            box-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .team-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .team-role {
+            font-family: 'Space Mono', monospace;
+            color: var(--primary-neon);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .social-links { display: flex; justify-content: center; gap: 1.5rem; }
+        .social-links a { color: var(--text-muted); transition: 0.3s; font-size: 1.3rem; }
+        .social-links a:hover { color: var(--primary-neon); transform: scale(1.2); text-shadow: 0 0 10px var(--accent-glow); }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 60px 8%;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000;
+        }
+
+        @media (max-width: 968px) {
+            .nav-center { display: none; }
+            .about-grid { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+            .abstract-visual { height: 300px; margin-top: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">RAG.COMPLY</a>
+        
+        <div class="nav-center">
+            <a href="/" class="nav-links">Home</a>
+            <a href="/#features" class="nav-links">Features</a>
+            <a href="/#workflow" class="nav-links">Workflow</a>
+            <a href="/aboutUs" class="nav-links active">About Us</a>
+            <a href="/#contact" class="nav-links">Contact</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="/assistant" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <section class="section">
+        
+        <div class="about-grid">
+            <div class="mission-text">
+                <h2>Built for <span>Founders</span></h2>
+                <p>Startups die from a thousand paper cuts, and compliance is the sharpest blade. We watched brilliant teams stall because they couldn't untangle regulatory requirements or afford massive legal retainers.</p>
+                <p>We built <strong>RAG.COMPLY</strong> to democratize enterprise-grade governance. Our AI engine acts as an autonomous compliance officer—reading your documents, understanding your structure, and flagging risks before they become roadblocks, so you can get back to building your product.</p>
+            </div>
+            
+            <div class="abstract-visual">
+                <div class="orbit-1"></div>
+                <div class="orbit-2"></div>
+                <i class="fas fa-shield-check" style="font-size: 5rem; color: var(--text-main); text-shadow: 0 0 40px var(--accent-glow); z-index: 2;"></i>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h2 style="font-size: 3rem; font-weight: 800;">The Architecture <span>Team</span></h2>
+        </div>
+
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="avatar"><i class="fas fa-database"></i></div>
+                <h3>Urvashi Srivastava</h3>
+                <div class="team-role">Co-Founder & Data Lead</div>
+                <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">Passionate about leveraging data science to solve real-world bottlenecks, Urvashi engineered the analytical core and Python-based data modeling of RAG.COMPLY. Her algorithms allow the platform to navigate dense legal text and translate it into actionable, verified startup guidance.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="avatar"><i class="fas fa-server"></i></div>
+                <h3>Utkarsh Mishra</h3>
+                <div class="team-role">Co-Founder & Engineering Lead</div>
+                <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">Utkarsh bridges the gap between raw data pipelines and seamless user experience. He architected the platform's cloud infrastructure and integration layers, ensuring that founders can run a fully compliant operation via an intuitive, zero-latency interface.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section" style="padding-top: 50px;">
+        <div class="chat-container">
+            
+            <div class="chat-header">
+                <h2>Test The <span style="color: var(--primary-neon);">Mesh</span></h2>
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16,185,129,0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary-neon);">
+                    <div style="width: 8px; height: 8px; background: var(--primary-neon); border-radius: 50%; box-shadow: 0 0 10px var(--primary-neon);"></div>
+                    <span style="color: var(--primary-neon); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700;">LIVE SYSTEM MONITOR</span>
+                </div>
+            </div>
+
+            <div id="chatBox" class="chat-box">
+                <div class="msg-wrapper ai">
+                    <div class="avatar-small avatar-ai"><i class="fas fa-brain"></i></div>
+                    <div class="msg-bubble ai">
+                        <strong style="color: var(--primary-neon); display: block; margin-bottom: 5px; font-family: 'Space Mono'; font-size: 0.8rem;">[SYSTEM INITIALIZED]</strong>
+                        The RAG-Driven AI for Startup Compliance Guidance is online. How can I assist you with your regulatory mapping today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input 
+                    id="userInput" 
+                    type="text" 
+                    class="chat-input" 
+                    placeholder="Ask about SOC2, data privacy, or corporate structuring..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button onclick="sendMessage()" class="btn btn-primary" style="display: flex; align-items: center; gap: 10px; font-size: 1rem;">
+                    Execute <i class="fas fa-terminal"></i>
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo">RAG.COMPLY</div>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">&copy; 2026 AI Governance Labs. Verified Architecture.</p>
+        <div>
+            <i class="fab fa-github" style="margin-left: 20px; cursor: pointer;"></i>
+            <i class="fab fa-linkedin" style="margin-left: 20px; cursor: pointer;"></i>
+        </div>
+    </footer>
+    <script>
+        function sendMessage() {
+            const input = document.getElementById("userInput");
+            const chatBox = document.getElementById("chatBox");
+            const text = input.value.trim();
+
+            if (text === "") return;
+
+            // 1. Append User Message
+            const userMsg = `
+                <div class="msg-wrapper user">
+                    <div class="avatar-small avatar-user"><i class="fas fa-user"></i></div>
+                    <div class="msg-bubble user">${text}</div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', userMsg);
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 2. Append Typing Indicator
+            const typingId = 'typing-' + Date.now();
+            const typingIndicator = `
+                <div class="msg-wrapper ai" id="${typingId}">
+                    <div class="avatar-small avatar-ai"><i class="fas fa-network-wired"></i></div>
+                    <div class="msg-bubble ai" style="display: flex; align-items: center;">
+                        <span style="margin-right: 10px; font-size: 0.85rem; color: var(--text-muted);">Retrieving context nodes</span>
+                        <div class="typing-dots">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', typingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 3. Replace Typing Indicator with Response after delay
+            setTimeout(() => {
+                document.getElementById(typingId).remove();
+                
+                const aiMsg = `
+                    <div class="msg-wrapper ai">
+                        <div class="avatar-small avatar-ai"><i class="fas fa-check-double"></i></div>
+                        <div class="msg-bubble ai" style="border-left: 3px solid var(--primary-neon);">
+                            <strong style="color: var(--primary-neon); display: block; margin-bottom: 5px; font-family: 'Space Mono'; font-size: 0.8rem;">[NODE VERIFIED]</strong>
+                            Context retrieved. To generate a verified compliance response, please connect your secure data sources via the main console.
+                        </div>
+                    </div>
+                `;
+                chatBox.insertAdjacentHTML('beforeend', aiMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1500); // 1.5 second delay for the cool factor
+        }
+
+        // Allow sending with Enter key
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+    </script>
+
+</body>
+</html>
