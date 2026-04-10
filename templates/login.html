@@ -186,6 +186,19 @@
 
     <main>
         <div id="container" class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 100%; max-width: 400px;">
+                  {% for category, message in messages %}
+                    <div style="padding: 15px; margin-bottom: 10px; border-radius: 10px; background: {% if category == 'error' %}rgba(239, 68, 68, 0.9){% else %}rgba(16, 185, 129, 0.9){% endif %}; color: white; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
             <div class="row">
                 <div class="col align-items-center flex-col">
                     <div class="form-wrapper align-items-center">
@@ -207,6 +220,10 @@
                                 <div class="input-group">
                                     <i class='bx bxs-lock-alt'></i>
                                     <input id="password" name="password" type="password" placeholder="Password" required>
+                                </div>
+                                <div class="input-group">
+                                    <i class='bx bxs-lock-open-alt'></i>
+                                    <input id="confirm_password" name="confirm_password" type="password" placeholder="Confirm Password" required>
                                 </div>
                                 <button type="submit">Initialize Node</button>
                             </form>

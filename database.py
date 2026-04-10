@@ -6,5 +6,5 @@ SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
 def init_db():
-	from .models import User, QuestionHistory, UnansweredQuestion
+	from models import User, QuestionHistory, UnansweredQuestion
 	Base.metadata.create_all(bind=engine)
