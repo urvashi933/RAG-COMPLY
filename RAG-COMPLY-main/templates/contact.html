@@ -5,11 +5,12 @@
 <title>Contact | RAG.COMPLY</title>
 
 <style>
+
 /* ===== GLOBAL ===== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: #050807;
+    background: #0a0a0a; /* darker */
     color: white;
 }
 
@@ -19,6 +20,7 @@ nav {
     align-items: center;
     justify-content: space-between;
     padding: 20px 60px;
+    border-bottom: 1px solid rgba(0,255,150,0.15);
 }
 
 /* CENTER LINKS */
@@ -26,7 +28,17 @@ nav {
     display: flex;
     gap: 30px;
     justify-content: center;
-    flex: 1;  /* THIS FIXES ALIGNMENT */
+    flex: 1;
+}
+
+.nav-center a {
+    text-decoration: none;
+    color: #ccc;
+    transition: 0.3s;
+}
+
+.nav-center a:hover {
+    color: #00ff9d;
 }
 
 /* RIGHT SIDE */
@@ -35,58 +47,47 @@ nav {
     gap: 15px;
 }
 
+/* LOGIN BUTTON (FIXED NEON STYLE) */
 .login-btn {
     padding: 10px 24px;
-    border-radius: 14px;
-
-    /* border */
-    border: 1px solid rgba(0, 255, 150, 0.5);
-
-    /* text */
-    color: #00ff9c;
+    border-radius: 12px;
+    border: 1px solid #00ff9d;
+    color: #00ff9d;
     text-decoration: none;
     font-weight: 500;
-
-    /* glass effect */
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(6px);
-
-    /* glow */
-    box-shadow: 0 0 10px rgba(0, 255, 150, 0.2);
-
-    transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-    background: rgba(0, 255, 150, 0.1);
-    box-shadow: 
-        0 0 12px rgba(0, 255, 150, 0.4),
-        0 0 20px rgba(0, 255, 150, 0.2);
-
-    transform: translateY(-1px);
-}
-
-.logo {
-    font-weight: bold;
-    font-size: 22px;
-    background: linear-gradient(90deg, #00ff9c, #00cc7a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    /* glow effect */
-    text-shadow: 0 0 8px rgba(0, 255, 150, 0.6);
-}
-
-.nav-center a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: #ccc;
+    background: transparent;
     transition: 0.3s;
 }
 
-.nav-center a:hover {
-    color: #00ff9c;
+.login-btn:hover {
+    background: #00ff9d;
+    color: black;
+    box-shadow: 0 0 12px rgba(0,255,157,0.6);
+}
+
+/* GET STARTED BUTTON (FIXED) */
+.get-started {
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: none;
+    background: #00ff9d;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.get-started:hover {
+    background: #00c97a;
+    box-shadow: 0 0 12px rgba(0,255,157,0.6);
+}
+
+/* LOGO */
+.logo {
+    font-weight: bold;
+    font-size: 22px;
+    color: #00ff9d; 
+    text-shadow: 0 0 8px rgba(0,255,150,0.6);
 }
 
 /* ===== MAIN SECTION ===== */
@@ -130,6 +131,7 @@ nav {
     backdrop-filter: blur(10px);
 }
 
+/* INPUTS */
 input, textarea {
     width: 100%;
     padding: 14px;
@@ -141,27 +143,30 @@ input, textarea {
     color: white;
 }
 
+/* TEXTAREA */
 textarea {
     height: 130px;
 }
 
-button {
+/* SUBMIT BUTTON */
+button[type="submit"] {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(90deg, #00ff9c, #00cc7a);
+    background: #00ff9d;
     border: none;
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
+    color: black;
 }
 
-button:hover {
-    opacity: 0.9;
+button[type="submit"]:hover {
+    background: #00c97a;
 }
 
 /* SUCCESS MESSAGE */
 .success {
-    color: #00ff9c;
+    color: #00ff9d;
     margin-top: 10px;
     display: none;
 }
@@ -185,9 +190,8 @@ button:hover {
 
     <div class="nav-right">
         <a href="/login" class="login-btn">Login</a>
-        <button>Get Started</button>
+        <button class="get-started">Get Started</button>
     </div>
-
 </nav>
 
 <!-- ===== MAIN ===== -->
@@ -221,7 +225,6 @@ button:hover {
 <script>
 document.getElementById("contactForm").addEventListener("submit", function(e){
     e.preventDefault();
-
     document.querySelector(".success").style.display = "block";
 });
 </script>
