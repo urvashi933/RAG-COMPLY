@@ -1,9 +1,9 @@
 import os
 # Get your key from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+GEMINI_API_KEY = "AIzaSyCZRJF725yQn2VEvODeciNg6Hj97cAadkg"
 # AI Model Configuration
 EMBEDDING_MODEL = "text-embedding-004" # High accuracy embedding
-GENERATIVE_MODEL = "gemini-2.0-flash" # Fast and smart generation
+GENERATIVE_MODEL = "gemini-2.5-flash-lite" # Fast and smart generation
 # Processing Config
 CHUNK_SIZE = 600 # Words per block
 CHUNKS_TO_RETRIEVE = 4 # Number of sources to show
