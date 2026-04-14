@@ -13,7 +13,7 @@ class User(Base):
 class QuestionHistory(Base):
     __tablename__ = "history"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id'),nullable=True)
     query = Column(String(500))
     answer = Column(String(2000))
     sector = Column(String(50))

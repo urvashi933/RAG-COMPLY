@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-from config import GEMINI_API_KEY, EMBEDDING_MODEL
+from config import EMBEDDING_MODEL
 
 model= SentenceTransformer(EMBEDDING_MODEL)
 
