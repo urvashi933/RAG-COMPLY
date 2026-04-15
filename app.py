@@ -127,7 +127,7 @@ def signup():
 def assistant():
     return render_template("assistant.html")
 
-@app.route('/contact') # overview page
+@app.route('/contact')  # overview page
 def contact():
     return render_template("contact.html")
 
