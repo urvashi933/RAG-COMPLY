@@ -1,8 +1,8 @@
 import os 
-from utils.document_loader import extract_text 
+from utils.document_loader import load_document 
 from utils.text_chunker import chunk_text 
 from utils.embedding import get_embedding 
-from utils.faiss_indexer import save_index 
+from utils.faiss_indexer import build_faiss_index
  
 # Define which folders correspond to which sectors 
 SECTORS = { 
@@ -10,42 +10,39 @@ SECTORS = {
     "workforce": "data/workforce" 
 } 
  
-def run_indexing(): 
-    for sector, folder_path in SECTORS.items(): 
-        print(f"        Logic Initialized for Sector: {sector}") 
+for sector, folder_path in SECTORS.items(): 
+        print(f"\nIndexing Sector: {sector}") 
          
-        all_embeddings = [] 
-        all_metadata = [] 
+        embeddings = [] 
+        metadatas = [] 
  
-        if not os.path.exists(folder_path): 
-            print(f"    Folder {folder_path} missing. Skipping...") 
-            continue 
  
         for filename in os.listdir(folder_path): 
             file_path = os.path.join(folder_path, filename) 
             print(f"     Processing: {filename}...") 
  
             # 1. Load context 
-            text = extract_text(file_path) 
+            text = load_document(file_path) 
              
             # 2. Chunk text 
             chunks = chunk_text(text) 
  
             # 3. Embed & Metadata 
-            for i, chunk in enumerate(chunks): 
+            for idx, chunk in enumerate(chunks): 
                 embedding = get_embedding(chunk) 
-                all_embeddings.append(embedding) 
-                all_metadata.append({ 
-                    "text": chunk, 
-                    "source": filename, 
-                    "sector": sector, 
-                    "chunk_id": i 
-                }) 
- 
-        # 4. Save to FAISS 
-        if all_embeddings: 
-            save_index(all_embeddings, all_metadata, f"vector_store/{sector}") 
-            print(f"   Indexed {len(all_metadata)} chunks for {sector}.") 
- 
-if __name__ == "__main__": 
-    run_indexing()
+
+                embeddings.append(embedding) 
+                metadatas.append({ 
+                    "sector":sector,
+                    "document":filename,
+                    "chunk_id":idx,
+                    "source":f"(filename)-chunk(idx)",
+                    "text": chunk
+                })
+        build_faiss_index(
+            embeddings,
+            metadatas,
+            save_path=f"vector_store/{sector}_faiss"
+            )
+
+        print(f"✅{sector} indexing completed")

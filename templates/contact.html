@@ -55,9 +55,10 @@ nav {
     text-decoration: none;
 }
 
-.nav-links a:hover {
-    color: var(--primary);
-}
+.nav-links:hover, .nav-links.active {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
 
 .btn {
     padding: 10px 20px;
@@ -206,11 +207,11 @@ textarea {
     <div class="logo">✔ RAG.COMPLY</div>
 
     <div class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">Features</a>
-        <a href="#">Workflow</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
+       <a href="/" class="nav-links">Home</a>
+            <a href="/#features" class="nav-links">Features</a>
+            <a href="/#workflow" class="nav-links">Workflow</a>
+            <a href="/aboutUs" class="nav-links ">About Us</a>
+            <a href="/contact" class="nav-links active">Contact</a>
     </div>
 
     <button class="btn">Get Started</button>
