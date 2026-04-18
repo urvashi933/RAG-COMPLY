@@ -5,13 +5,11 @@
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
 from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash 
 from functools import wraps
 
 from datetime import datetime
-from utils.rag_pipeline import multi_agent_rag
-
+from utils.rag_pipeline import rag_answer
 from database import init_db, SessionLocal
 from models import QuestionHistory,UnansweredQuestion,User
 
@@ -23,21 +21,6 @@ print(" init db created")
 init_db()
 
 admin_bp=Blueprint('admin',__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app) #initializing database
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fullname = db.Column(db.String(150), nullable=False)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(150), nullable=False)
-
-with app.app_context():
-    db.create_all() # creates the database and tables based on the defined models. It ensures that the database is set up before any operations are performed on it. This is necessary because SQLAlchemy needs to know about the application context to create the tables correctly.
 
 def login_required(f):
     @wraps(f)
@@ -54,6 +37,10 @@ def login_required(f):
 @app.route('/') # default page i.e. home page
 def home():
     return render_template("index.html")
+
+@app.route('/aboutUs') # overview page
+def aboutUs():
+    return render_template("aboutUs.html")
 
 @app.route('/login', methods=['GET', 'POST']) # register page
 def signup():
@@ -83,6 +70,7 @@ def signup():
                 flash('Passwords do not match.', 'error')
                 return redirect(url_for('signup'))
 
+            db=SessionLocal()
             # Check if user already exists
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
@@ -101,8 +89,8 @@ def signup():
             )
 
             try:
-                db.session.add(new_user)
-                db.session.commit()
+                db.add(new_user)
+                db.commit()
                 flash('Registration successful! Please sign in.', 'success')
                 # Redirect back to the same login page so the sign-in form is shown
                 return redirect(url_for('signup'))
@@ -139,10 +127,6 @@ def signup():
 def assistant():
     return render_template("assistant.html")
 
-@app.route('/aboutUs') # overview page
-def aboutUs():
-    return render_template("aboutUs.html")
-
 @app.route('/contact') # overview page
 def contact():
     return render_template("contact.html")
@@ -165,9 +149,10 @@ def rag_assistant():
         sector = request.form.get("sector")
         # pass the current logged-in user's id into the RAG pipeline
         user_id = session.get('user_id')
-        result = multi_agent_rag(query, sector, user_id)
+        result = rag_answer(query, sector, user_id)
         answer = result["answer"]
         sources = result["sources"]
+
     return render_template(
         "rag_assistant.html",
         answer=answer,
@@ -184,8 +169,11 @@ def view_unanswered():
         .all()
     )
     db.close()
+
     return render_template("admin.html", questions=questions)
+
 app.register_blueprint(admin_bp)
+
 # ---------------- HISTORY API ----------------
 @app.route("/history", methods=["GET"])
 @login_required
@@ -198,6 +186,7 @@ def get_question_history():
         .all()
     )
     db.close()
+
     return jsonify([
         {
             "id": q.id,
@@ -210,7 +199,7 @@ def get_question_history():
 # ---------------- RUN ----------------
 
 if __name__=='__main__':
-    app.run(debug=True)
+    app.run(debug=True,port=5000)
 
 # in terminal type : 1) cd flask 2)python app.py --> in the http link provided-> follow link--> web page gets opened
 # make a sub-folder with name exactly as : templates

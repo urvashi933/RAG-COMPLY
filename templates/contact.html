@@ -2,168 +2,198 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact | RAG.COMPLY</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
+
 <style>
-/* ===== GLOBAL ===== */
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #050807;
-    color: white;
+
+/* ===== ROOT ===== */
+:root {
+    --bg-dark: #050505;
+    --primary: #10b981;
+    --glow: rgba(16,185,129,0.4);
+    --text: #f8fafc;
+    --muted: #94a3b8;
 }
 
-/* ===== NAVBAR ===== */
+/* ===== GLOBAL ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at top left, #0a1f17, #000);
+    color: var(--text);
+}
+
+/* ===== NAV ===== */
 nav {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 20px 60px;
-}
-
-/* CENTER LINKS */
-.nav-center {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-    flex: 1;  /* THIS FIXES ALIGNMENT */
-}
-
-/* RIGHT SIDE */
-.nav-right {
-    display: flex;
-    gap: 15px;
-}
-
-.login-btn {
-    padding: 10px 24px;
-    border-radius: 14px;
-
-    /* border */
-    border: 1px solid rgba(0, 255, 150, 0.5);
-
-    /* text */
-    color: #10b981;
-    text-decoration: none;
-    font-weight: 500;
-
-    /* glass effect */
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(6px);
-
-    /* glow */
-    box-shadow: 0 0 10px rgba(0, 255, 150, 0.2);
-
-    transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-    background: rgba(0, 255, 150, 0.1);
-    box-shadow: 
-        0 0 12px rgba(16, 185, 129, 0.4),
-        0 0 20px rgba(0, 255, 150, 0.2);
-
-    transform: translateY(-1px);
+    padding: 20px 8%;
+    align-items: center;
 }
 
 .logo {
-    font-weight: bold;
-    font-size: 22px;
-    background: linear-gradient(90deg, #10b981, #00cc7a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    /* glow effect */
-    text-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 1.4rem;
 }
 
-.nav-center a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: #ccc;
-    transition: 0.3s;
-}
-
-.nav-center a:hover {
-    color: #00ff9c;
-}
-
-/* ===== MAIN SECTION ===== */
-.container {
+.nav-links {
     display: flex;
-    padding: 60px;
-    gap: 50px;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: black;
+    border: none;
+    cursor: pointer;
+}
+
+/* ===== MAIN CARD ===== */
+.wrapper {
+    padding: 80px 8%;
+}
+
+.card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(0,0,0,0.7);
+    border-radius: 30px;
+    padding: 40px;
+    border: 1px solid rgba(16,185,129,0.2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px rgba(0,0,0,0.9);
 }
 
 /* LEFT */
-.left {
-    flex: 1;
+.left h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
 }
 
-.left h1 {
-    font-size: 42px;
+.left span {
+    color: var(--primary);
 }
 
 .left p {
-    color: #aaa;
+    color: var(--muted);
     margin-bottom: 30px;
 }
 
-/* INFO CARDS */
-.card {
-    background: rgba(20, 30, 25, 0.6);
-    border: 1px solid rgba(0,255,150,0.15);
-    padding: 20px;
-    border-radius: 14px;
+/* FEATURES */
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     margin-bottom: 15px;
-    backdrop-filter: blur(8px);
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(16,185,129,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
 }
 
 /* RIGHT FORM */
-.right {
-    flex: 1;
-    background: rgba(20, 30, 25, 0.6);
-    border: 1px solid rgba(0,255,150,0.2);
+.form {
+    background: rgba(10,10,10,0.8);
     padding: 30px;
-    border-radius: 18px;
-    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(16,185,129,0.2);
 }
 
-input, textarea {
+.form h3 {
+    margin-bottom: 20px;
+}
+
+input, textarea, select {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     margin-bottom: 15px;
     border-radius: 10px;
-    border: none;
-    outline: none;
-    background: #0b0f0d;
+    border: 1px solid rgba(16,185,129,0.2);
+    background: black;
     color: white;
 }
 
-textarea {
-    height: 130px;
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--glow);
 }
 
-button {
+textarea {
+    height: 120px;
+}
+
+/* FILE DROP */
+.drop {
+    border: 1px dashed rgba(16,185,129,0.4);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* BUTTON */
+.submit {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(90deg, #10b981, #00cc7a);
+    background: linear-gradient(90deg, #10b981, #00ff9c);
     border: none;
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
 }
 
-button:hover {
-    opacity: 0.9;
+.submit:hover {
+    box-shadow: 0 0 20px var(--glow);
 }
 
-/* SUCCESS MESSAGE */
+/* SUCCESS */
 .success {
-    color: #00ff9c;
     margin-top: 10px;
+    color: var(--primary);
     display: none;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+    .card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
 }
 
 </style>
@@ -171,57 +201,84 @@ button:hover {
 
 <body>
 
-<!-- ===== NAVBAR ===== -->
+<!-- NAV -->
 <nav>
-    <div class="logo">RAG.COMPLY</div>
+    <div class="logo">✔ RAG.COMPLY</div>
 
-    <div class="nav-center">
-        <a href="/">Home</a>
-        <a href="#features">Features</a>
-        <a href="#workflow">Workflow</a>
-        <a href="/aboutUs">About Us</a>
-        <a href="/contact">Contact</a>
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Features</a>
+        <a href="#">Workflow</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
     </div>
 
-    <div class="nav-right">
-        <a href="/login" class="login-btn">Login</a>
-        <button>Get Started</button>
-    </div>
-
+    <button class="btn">Get Started</button>
 </nav>
 
-<!-- ===== MAIN ===== -->
-<div class="container">
+<!-- MAIN -->
+<div class="wrapper">
+    <div class="card">
 
-    <!-- LEFT -->
-    <div class="left">
-        <h1>Get in touch</h1>
-        <p>Have questions or ready to transform your business with AI automation?</p>
+        <!-- LEFT -->
+        <div class="left">
+            <h1>Tell us about your <span>idea</span></h1>
+            <p>We’ll help you stay compliant, faster.</p>
 
-        <div class="card">📧 Email us<br><small>your@email.com</small></div>
-        <div class="card">📞 Call us<br><small>+91 XXXXX XXXXX</small></div>
-        <div class="card">📍 Location<br><small>India</small></div>
+            <div class="feature">
+                <div class="icon">⚡</div>
+                <p>We respond within 12 hours</p>
+            </div>
+
+            <div class="feature">
+                <div class="icon">📄</div>
+                <p>NDA signed if required</p>
+            </div>
+
+            <div class="feature">
+                <div class="icon">👥</div>
+                <p>Connect with compliance specialists</p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="form">
+            <h3>Send us a message</h3>
+
+            <form id="form">
+                <input type="text" placeholder="Full Name*" required>
+                <input type="email" placeholder="Email*" required>
+
+                <textarea placeholder="Your idea..."></textarea>
+
+                <select>
+                    <option>Select Inquiry Type</option>
+                    <option>Compliance Help</option>
+                    <option>Startup Registration</option>
+                    <option>Data Privacy</option>
+                </select>
+
+                <div class="drop">
+                    Attach file (optional)
+                </div>
+
+                <button class="submit">Submit Inquiry →</button>
+                <div class="success">Message sent successfully 🚀</div>
+            </form>
+        </div>
+
     </div>
 
-    <!-- RIGHT FORM -->
-    <div class="right">
-        <form id="contactForm">
-            <input type="text" placeholder="Name" required>
-            <input type="email" placeholder="Email" required>
-            <textarea placeholder="Message"></textarea>
-
-            <button type="submit">Submit</button>
-            <div class="success">Message sent successfully 🚀</div>
-        </form>
+    <div class="footer">
+        © 2026 RAG.COMPLY | AI Compliance Platform
     </div>
-
 </div>
 
-<!-- ===== JS ===== -->
+<!-- JS -->
 <script>
-document.getElementById("contactForm").addEventListener("submit", function(e){
+document.getElementById("form").addEventListener("submit", function(e){
     e.preventDefault();
-
     document.querySelector(".success").style.display = "block";
 });
 </script>
