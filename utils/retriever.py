@@ -5,7 +5,7 @@ import numpy as np
 from utils.embedding import get_embedding
 
 
-SIMILARITY_THRESHOLD = 0.75  # tune if needed
+SIMILARITY_THRESHOLD = 1.0  # tune if needed
 
 
 def load_faiss_index(sector):
