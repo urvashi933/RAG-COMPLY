@@ -7,7 +7,7 @@ def log_question(question, sector, user_id, answer=""):
 
     entry = QuestionHistory( 
         user_id=user_id, 
-        query=question, 
+        question=question, 
         # answer=answer, 
         timestamp=datetime.now().isoformat(),
         sector=sector 
@@ -20,7 +20,7 @@ def log_unanswered(question, sector):
     db = SessionLocal() 
 
     entry = UnansweredQuestion(
-        query=question, 
+        question=question, 
         sector=sector, 
         timestamp=datetime.now().isoformat()) 
     

@@ -1,6 +1,6 @@
 from utils.retriever import retrieve_chunks
 
-query = "What is contract drafting?"
+query = "what's the benefit of startups?"
 sector = "legal"
 
 results = retrieve_chunks(query, sector)

@@ -1,6 +1,7 @@
 from utils.rag_pipeline import rag_answer
 
-query = "what is contract drafting ?"
+query = "what's the benefit of startups?" 
+
 
 sector = "workforce"
 
