@@ -1,8 +1,6 @@
 from utils.rag_pipeline import rag_answer
 
 query = "what's the benefit of startups?" 
-
-
 sector = "workforce"
 
 result = rag_answer(query, sector)
