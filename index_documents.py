@@ -36,7 +36,7 @@ for sector, folder_path in SECTORS.items():
                     "sector":sector,
                     "document":filename,
                     "chunk_id":idx,
-                    "source":f"(filename)-chunk(idx)",
+                    "source": f"File: {filename}, Chunk ID: {idx}",
                     "text": chunk
                 })
         build_faiss_index(
