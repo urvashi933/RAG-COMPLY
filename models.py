@@ -25,8 +25,9 @@ class User(Base):
     __tablename__="user"
 
     id = Column(Integer, primary_key=True,index=True)
-    name = Column(String(50))
+    fullname = Column(String(100))
     email = Column(String(100))
+    username = Column(String(100))
     password = Column(String(200))
     created_at = Column(DateTime, default=datetime.utcnow)
     

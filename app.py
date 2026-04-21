@@ -4,6 +4,8 @@
 # main server file :typos leads to issues in running server
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
+import email
+
 from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
 from werkzeug.security import generate_password_hash, check_password_hash 
 from functools import wraps
@@ -29,7 +31,7 @@ def login_required(f):
         if 'user_id' not in session:
             flash('Please log in to access this page.', 'warning')
             # include next so user returns to original page after signing in
-            return redirect(url_for('signup',next=request.url))
+            return redirect(url_for('login',next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -42,86 +44,100 @@ def home():
 def aboutUs():
     return render_template("aboutUs.html")
 
-@app.route('/login', methods=['GET', 'POST']) # register page
+@app.route('/signup', methods=['GET', 'POST']) # register page
 def signup():
     if request.method == 'POST':
         # Determine whether this POST is a registration (has fullname) or a login
-        if request.form.get('fullname'):
-            fullname = request.form.get('fullname', '').strip()
-            username = request.form.get('username', '').strip()
-            email = request.form.get('email', '').strip()
-            password = request.form.get('password', '')
-            confirm_password = request.form.get('confirm_password')
+        fullname = request.form.get('fullname')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
             # Basic validation
-            if not (fullname and username and email and password):
-                flash('Please fill all required fields for registration.', 'error')
-                return redirect(url_for('signup'))
-            
+        if not (fullname and username and email and password):
+            flash('Please fill all required fields for registration.', 'error')
+            return redirect(url_for('login'))
+
+        if len(fullname.strip())<2:
+            flash('Full name must contain at least 2 words.', 'error')
+            return redirect(url_for('login')) 
+
+        if '@' not in email or '.' not in email:
+            flash('Please enter a valid email address.', 'error')
+            return redirect(url_for('login'))
+        
              #password must be at least 8 characters long and a combination of letters and numbers and special characters
-            if len(password)<8 or not any(char.isdigit() for char in password)\
+        if len(password)<8 or not any(char.isdigit() for char in password)\
               or not any(char.isalpha() for char in password) or not any(not char.isalnum()\
                                                                           for char in password):
-                flash('Password must be at least 8 characters long and contain letters, \
+            flash('Password must be at least 8 characters long and contain letters, \
                   numbers, and special characters.', 'error')
-                return redirect(url_for('signup'))
+            return redirect(url_for('login'))
         
-            if password != confirm_password:
-                flash('Passwords do not match.', 'error')
-                return redirect(url_for('signup'))
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('login'))
 
-            db=SessionLocal()
+        db=SessionLocal()
             # Check if user already exists
-            existing_user = User.query.filter_by(username=username).first()
-            if existing_user:
-                flash('Username already exists!', 'error')
-                return redirect(url_for('signup'))
+        existing_user = db.query(User).filter(User.email == email).first()
+        if existing_user:
+            db.close()
+            flash('Email already exists!', 'error')
+            return redirect(url_for('login'))
 
             # Hash the password
-            password_hash = generate_password_hash(password)
+        password_hash = generate_password_hash(password)
 
             # Create new user
-            new_user = User(
-                fullname=fullname,
-                username=username,
-                email=email,
+        new_user = User(
+                fullname=fullname.strip,
+                username=username.strip(),
+                email=email.strip(),
                 password_hash=password_hash
             )
 
-            try:
+        try:
                 db.add(new_user)
                 db.commit()
                 flash('Registration successful! Please sign in.', 'success')
                 # Redirect back to the same login page so the sign-in form is shown
-                return redirect(url_for('signup'))
+                return redirect(url_for('login'))
 
-            except Exception:
-                db.session.rollback()
+        except Exception:
+                db.rollback()
                 flash('Registration failed!', 'error')
-                return redirect(url_for('signup'))
+                return redirect(url_for('login'))
+        finally:
+                db.close()
+                
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
+        if not (email and password):
+            flash('Please provide email and password.', 'error')
+            return redirect(url_for('login'))
+
+        db = SessionLocal()
+        user = db.query(User).filter(User.email == email).first()
+        db.close()
+        if user and check_password_hash(user.password_hash, password):
+            session["user_id"]=user.id
+            session["user_name"]=user.username
+            flash('Login successful!', 'success')
+            return redirect(url_for('rag_assistant'))
         else:
-            # Login flow
-            username = request.form.get('username', '').strip()
-            password = request.form.get('password', '')
+            flash('Invalid credentials.', 'error')
+            return redirect(url_for('login'))
 
-            if not (username and password):
-                flash('Please provide username and password.', 'error')
-                return redirect(url_for('signup'))
-
-            user = User.query.filter_by(username=username).first()
-            if user and check_password_hash(user.password_hash, password):
-                session["user_id"]=user.id
-                session["user_name"]=user.username
-                flash('Login successful!', 'success')
-                return redirect(url_for('home'))
-            else:
-                flash('Invalid credentials.', 'error')
-                return redirect(url_for('signup'))
-
+@app.route('/login',methods=['GET','POST'])
+def login():
     return render_template("login.html")
-
-
+    
 @app.route('/assistant') # assistant page
 @login_required
 def assistant():
@@ -138,6 +154,7 @@ def logout():
     session.clear()
     flash('Logged out successfully','success')
     return redirect(url_for('signup'))
+
 # ---------------- RAG ----------------
 @app.route('/rag', methods=['GET', 'POST'])
 @login_required
