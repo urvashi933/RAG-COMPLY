@@ -4,12 +4,9 @@
 # main server file :typos leads to issues in running server
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
-import email
-
 from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
-from werkzeug.security import generate_password_hash, check_password_hash 
 from functools import wraps
-
+from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import datetime
 from utils.rag_pipeline import rag_answer
 from database import init_db, SessionLocal
@@ -47,70 +44,67 @@ def aboutUs():
 @app.route('/signup', methods=['GET', 'POST']) # register page
 def signup():
     if request.method == 'POST':
-        # Determine whether this POST is a registration (has fullname) or a login
         fullname = request.form.get('fullname')
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
 
-            # Basic validation
-        if not (fullname and username and email and password):
-            flash('Please fill all required fields for registration.', 'error')
+        if not fullname or len(fullname.strip()) < 2:
+            flash('Full name must be at least 2 characters long', 'error')
             return redirect(url_for('login'))
 
-        if len(fullname.strip())<2:
-            flash('Full name must contain at least 2 words.', 'error')
-            return redirect(url_for('login')) 
+        if not username or len(username.strip()) < 6:
+            flash('Username must be at least 6 characters long', 'error')
+            return redirect(url_for('login'))
 
-        if '@' not in email or '.' not in email:
-            flash('Please enter a valid email address.', 'error')
+        if not email or '@' not in email:
+            flash('Please enter a valid email', 'error')
             return redirect(url_for('login'))
-        
-             #password must be at least 8 characters long and a combination of letters and numbers and special characters
-        if len(password)<8 or not any(char.isdigit() for char in password)\
-              or not any(char.isalpha() for char in password) or not any(not char.isalnum()\
-                                                                          for char in password):
-            flash('Password must be at least 8 characters long and contain letters, \
-                  numbers, and special characters.', 'error')
+
+        if (
+            len(password) < 8
+            or not any(c.isalpha() for c in password)
+            or not any(c.isdigit() for c in password)
+            or not any(not c.isalnum() for c in password)
+        ):
+            flash('Password must be at least 8 characters and include letters, numbers & special characters', 'error')
             return redirect(url_for('login'))
-        
+
         if password != confirm_password:
-            flash('Passwords do not match.', 'error')
+            flash('Passwords do not match', 'error')
             return redirect(url_for('login'))
 
-        db=SessionLocal()
-            # Check if user already exists
+        db = SessionLocal()
         existing_user = db.query(User).filter(User.email == email).first()
+
         if existing_user:
             db.close()
-            flash('Email already exists!', 'error')
+            flash('Email already registered. Please login.', 'error')
             return redirect(url_for('login'))
 
-            # Hash the password
-        password_hash = generate_password_hash(password)
+        hashed_password = generate_password_hash(password)
 
-            # Create new user
         new_user = User(
-                fullname=fullname.strip,
-                username=username.strip(),
-                email=email.strip(),
-                password_hash=password_hash
-            )
+            fullname=fullname.strip(),
+            username=username.strip(),
+            email=email.strip(),
+            password=hashed_password,
+            created_at=datetime.utcnow()
+        )
 
         try:
-                db.add(new_user)
-                db.commit()
-                flash('Registration successful! Please sign in.', 'success')
-                # Redirect back to the same login page so the sign-in form is shown
-                return redirect(url_for('login'))
-
+            db.add(new_user)
+            db.commit()
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('login'))
         except Exception:
-                db.rollback()
-                flash('Registration failed!', 'error')
-                return redirect(url_for('login'))
+            db.rollback()
+            flash('Registration failed. Try again.', 'error')
+            return redirect(url_for('login'))
         finally:
-                db.close()
+            db.close()
+    return render_template("login.html")
                 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -125,7 +119,7 @@ def signin():
         db = SessionLocal()
         user = db.query(User).filter(User.email == email).first()
         db.close()
-        if user and check_password_hash(user.password_hash, password):
+        if user and check_password_hash(user.password, password):
             session["user_id"]=user.id
             session["user_name"]=user.username
             flash('Login successful!', 'success')
@@ -133,6 +127,7 @@ def signin():
         else:
             flash('Invalid credentials.', 'error')
             return redirect(url_for('login'))
+    return render_template("login.html")
 
 @app.route('/login',methods=['GET','POST'])
 def login():

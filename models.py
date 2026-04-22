@@ -26,8 +26,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True,index=True)
     fullname = Column(String(100))
-    email = Column(String(100))
     username = Column(String(100))
+    email = Column(String(100))
     password = Column(String(200))
     created_at = Column(DateTime, default=datetime.utcnow)
     

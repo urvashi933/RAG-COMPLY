@@ -13,13 +13,13 @@ def rag_answer(query: str, sector: str, user_id: int = None) -> dict:
     """
 
     # 1️⃣ Log every user question (for history & analytics)
-    # user_id is required by DB schema; propagate from caller (app route)
+    # `user_id` is required by DB schema; propagate from caller (app route)
     log_question(query, sector, user_id)
     # 2️⃣ Retrieve relevant document chunks using FAISS
     retrieved_chunks = retrieve_chunks(query, sector)
-    print("DEBUG -> retrieved_chunks:", retrieved_chunks)
-    print("DEBUG -> type:", type(retrieved_chunks))
-    print("DEBUG -> length:", len(retrieved_chunks) if retrieved_chunks is not None else "None")
+    print("DEBUG → retrieved_chunks:", retrieved_chunks)
+    print("DEBUG → type:", type(retrieved_chunks))
+    print("DEBUG → length:", len(retrieved_chunks) if retrieved_chunks is not None else "None")
 
     used_sector = sector
     # 3️⃣ If not found, try other sectors
