@@ -206,7 +206,7 @@ def rag_assistant():
 def get_local_documents(base_dir="data"):
     """Scans the data directory and returns just the filenames and sectors."""
     documents = []
-    sectors = ["legal", "workforce"]
+    sectors = ["legal", "workforce","branding","infrastructure","promotion","property_dealing"]
     
     for sector in sectors:
         folder_path = os.path.join(base_dir, sector)

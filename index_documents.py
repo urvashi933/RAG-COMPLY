@@ -8,9 +8,9 @@ SECTORS = {
     "legal": "data/legal",
     "workforce": "data/workforce",
     "branding": "data/branding",
-    "infrastructure": "data/infrastructure",
     "promotion": "data/promotion",
     "property_dealing": "data/property_dealing",
+    "infrastructure": "data/infrastructure"
 }
 
 for sector, folder_path in SECTORS.items():
