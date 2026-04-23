@@ -134,13 +134,6 @@ def signin():
 def login():
     return render_template("login.html")
     
-# 1. Ensure the assistant route requires login
-# @app.route('/assistant')
-# @login_required
-# def assistant():
-#     return render_template("assistant.html")
-
-
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
