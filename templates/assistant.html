@@ -235,10 +235,27 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 8px;
         }
+        
+        .citation-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-green);
+            font-weight: 500;
+        }
+        
         .citation svg { width: 14px; height: 14px; stroke: var(--neon-green); }
+
+        .citation-list {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+        }
 
         /* --- Input Area --- */
         .input-wrapper {
@@ -308,6 +325,7 @@
             transition: all 0.2s;
         }
         .send-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 0 15px rgba(57, 255, 20, 0.6); }
+        .send-btn:disabled { background: var(--dark-green); cursor: not-allowed; box-shadow: none; }
         .send-btn svg { width: 18px; height: 18px; fill: var(--bg-main); margin-left: 2px; }
 
         .typing { display: none; align-self: flex-start; padding: 15px 20px; background: var(--bg-panel); border: 1px solid var(--dark-green); border-radius: 12px; border-bottom-left-radius: 4px;}
@@ -317,6 +335,74 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+        /* --- New Answer and Empty State Styles --- */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.3));
+        }
+        .answer-box {
+            animation: fadeIn 0.5s ease-out;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .sources-container {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(57, 255, 20, 0.1);
+        }
+        .sources-container h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            color: var(--neon-green);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sources-container h3::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: var(--neon-green);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        .sources-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sources-list li {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 6px;
+            border-left: 2px solid var(--dark-green);
+            transition: all 0.2s;
+        }
+        .sources-list li:hover {
+            background: rgba(57, 255, 20, 0.05);
+            border-left-color: var(--neon-green);
+            color: white;
+        }
 
     </style>
 </head>
@@ -353,7 +439,7 @@
                     Session History
                 </div>
                 <div class="scrollable-list history-list" id="sidebar-history">
-                    <div style="font-size: 0.8rem; color: var(--dark-green); padding: 10px;">History is empty.</div>
+                    <div style="font-size: 0.8rem; color: var(--dark-green); padding: 10px;">Loading history...</div>
                 </div>
             </div>
         </aside>
@@ -371,32 +457,46 @@
             </header>
 
             <div class="chat-history" id="chat-history">
-                <div class="message ai-message">
-                    <strong>System Initialized.</strong><br><br>I am the RAG.COMPLY assistant. Select your sector below and ask a question to get verified compliance guidance.
-                </div>
+                {% if answer %}
+                    <div class="message ai-message answer-box">
+                        <p style="white-space: pre-line;">{{ answer }}</p>
+
+                        {% if sources %}
+                            <div class="sources-container">
+                                <h3>Sources</h3>
+                                <ul class="sources-list">
+                                    {% for source in sources %}
+                                        <li>{{ source }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <p>No response yet. Submit a query to see the generated answer and sources here.</p>
+                    </div>
+                {% endif %}
             </div>
 
-            <div class="typing" id="typing-indicator">
-                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-            </div>
-
-            <div class="input-wrapper">
+            <form class="input-wrapper" id="rag-form" method="POST" action="/rag">
                 <div class="input-box">
                     
-                    <select id="sector-select" class="sector-select">
-                        <option value="Legal">Legal</option>
-                        <option value="Workforce">Workforce</option>
+                    <select id="sector-select" name="sector" class="sector-select">
+                        <option value="legal">Legal</option>
+                        <option value="workforce">Workforce</option>
                     </select>
 
                     <div class="chat-input-container">
-                        <input type="text" id="user-input" class="chat-input" placeholder="Ask about startup compliance..." autocomplete="off" onkeypress="handleKeyPress(event)">
-                        <button class="send-btn" onclick="sendMessage()">
+                        <input type="text" id="user-input" name="query" class="chat-input" placeholder="Ask about startup compliance..." autocomplete="off">
+                        <button type="submit" class="send-btn" id="send-btn">
                             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                         </button>
                     </div>
 
                 </div>
-            </div>
+            </form>
         </main>
     </div>
 
@@ -404,106 +504,65 @@
         const chatHistory = document.getElementById('chat-history');
         const userInput = document.getElementById('user-input');
         const sectorSelect = document.getElementById('sector-select');
-        const typingIndicator = document.getElementById('typing-indicator');
         const sidebarHistory = document.getElementById('sidebar-history');
+        const sendBtn = document.getElementById('send-btn');
         
         let queryCount = 0; // Tracks history
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') sendMessage();
+        // 1. Fetch history from DB on page load
+        document.addEventListener('DOMContentLoaded', loadHistory);
+
+        function loadHistory() {
+            fetch("/history")
+                .then(res => res.json())
+                .then(data => {
+                    sidebarHistory.innerHTML = "";
+                    
+                    if (data.length === 0) {
+                        sidebarHistory.innerHTML = '<div style="font-size: 0.8rem; color: var(--dark-green); padding: 10px;">History is empty.</div>';
+                    } else {
+                        data.forEach(item => {
+                            addToHistorySidebar(item.question, item.sector);
+                        });
+                    }
+                })
+                .catch(err => console.error('Error loading history:', err));
         }
 
         function sendCachedQuery(queryText) {
             userInput.value = queryText;
-            sendMessage();
+            document.getElementById('rag-form').submit();
         }
 
         function handleLogout() {
             window.location.href = '/logout';
         }
 
-        function addToHistorySidebar(queryText) {
-            if (queryCount === 0) sidebarHistory.innerHTML = ''; // Clear "empty" message
+        function addToHistorySidebar(queryText, sectorVal) {
+            if (queryCount === 0 && sidebarHistory.innerHTML.includes("History is empty")) {
+                sidebarHistory.innerHTML = ''; 
+            }
             
             const historyItem = document.createElement('div');
             historyItem.classList.add('history-item');
             historyItem.innerText = queryText;
-            // Clicking history item puts it back in the input box
-            historyItem.onclick = () => { userInput.value = queryText; };
+            historyItem.title = queryText;
             
-            // Add to top of list
+            historyItem.onclick = () => { 
+                userInput.value = queryText; 
+                if(sectorVal) sectorSelect.value = sectorVal.toLowerCase();
+            };
+            
             sidebarHistory.prepend(historyItem);
             queryCount++;
-        }
-
-        async function sendMessage() {
-            const messageText = userInput.value.trim();
-            const selectedSector = sectorSelect.value;
-            if (!messageText) return;
-
-            // 1. Display User Message (with Sector)
-            appendMessage(messageText, 'user', null, selectedSector);
-            
-            // 2. Add to Sidebar History
-            addToHistorySidebar(messageText);
-
-            userInput.value = '';
-
-            // 3. Show Typing Indicator
-            typingIndicator.style.display = 'block';
-            chatHistory.appendChild(typingIndicator);
-            scrollToBottom();
-
-            // 4. API CALL TO FLASK (Simulated here)
-            try {
-                // Mock Delay
-                setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-                    const mockAnswer = `As a startup focusing on <b>${selectedSector}</b> compliance, you must ensure adherence to the respective statutory requirements and guidelines mapped in our database. Startups recognized by DPIIT are eligible for several regulatory exemptions.`;
-                    const mockSource = "DPIIT Gazette, Section 56(2)(viib)";
-                    appendMessage(mockAnswer, 'ai', mockSource, null);
-                }, 1200);
-            } catch (error) {
-                typingIndicator.style.display = 'none';
-                appendMessage("System Error: Could not connect to vector database.", 'ai');
-            }
-        }
-
-        function appendMessage(text, sender, source = null, sector = null) {
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message', `${sender}-message`);
-            
-            let messageHTML = '';
-
-            // If user message, prepend the Sector Badge
-            if (sender === 'user' && sector) {
-                messageHTML += `<span class="sector-badge">${sector}</span> `;
-            }
-            
-            messageHTML += text; 
-            msgDiv.innerHTML = messageHTML;
-
-            // AI Citation Box
-            if (sender === 'ai' && source) {
-                const citationDiv = document.createElement('div');
-                citationDiv.classList.add('citation');
-                citationDiv.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>
-                    VERIFIED SOURCE: ${source}
-                `;
-                msgDiv.appendChild(citationDiv);
-            }
-
-            chatHistory.appendChild(msgDiv);
-            scrollToBottom();
         }
 
         function scrollToBottom() {
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
+
+        // Scroll to bottom on load if answer exists
+        if (chatHistory) scrollToBottom();
     </script>
 </body>
 </html>

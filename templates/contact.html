@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
 
 <style>
-
 /* ===== ROOT ===== */
 :root {
     --bg-dark: #050505;
@@ -55,10 +54,10 @@ nav {
     text-decoration: none;
 }
 
-.nav-links:hover, .nav-links.active {
-            color: var(--primary-neon);
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
+.nav-links a:hover, .nav-links a.active {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--glow);
+}
 
 .btn {
     padding: 10px 20px;
@@ -141,7 +140,7 @@ input, textarea, select {
     color: white;
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 10px var(--glow);
@@ -149,6 +148,7 @@ input:focus, textarea:focus {
 
 textarea {
     height: 120px;
+    resize: none;
 }
 
 /* FILE DROP */
@@ -158,6 +158,7 @@ textarea {
     text-align: center;
     margin-bottom: 20px;
     border-radius: 10px;
+    color: var(--muted);
 }
 
 /* BUTTON */
@@ -169,17 +170,30 @@ textarea {
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
+    font-size: 1rem;
 }
 
 .submit:hover {
     box-shadow: 0 0 20px var(--glow);
 }
 
-/* SUCCESS */
-.success {
-    margin-top: 10px;
+/* SUCCESS FLASH */
+.flash-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+.flash-success {
+    background: rgba(16, 185, 129, 0.1);
     color: var(--primary);
-    display: none;
+    border: 1px solid var(--primary);
+}
+.flash-error {
+    background: rgba(255, 51, 102, 0.1);
+    color: #ff3366;
+    border: 1px solid #ff3366;
 }
 
 /* FOOTER */
@@ -196,32 +210,25 @@ textarea {
         gap: 30px;
     }
 }
-
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
 <nav>
     <div class="logo">✔ RAG.COMPLY</div>
-
     <div class="nav-links">
-       <a href="/" class="nav-links">Home</a>
-            <a href="/#features" class="nav-links">Features</a>
-            <a href="/#workflow" class="nav-links">Workflow</a>
-            <a href="/aboutUs" class="nav-links ">About Us</a>
-            <a href="/contact" class="nav-links active">Contact</a>
+        <a href="/">Home</a>
+        <a href="/#features">Features</a>
+        <a href="/#workflow">Workflow</a>
+        <a href="/aboutUs">About Us</a>
+        <a href="/contact" class="active">Contact</a>
     </div>
-
-    <button class="btn">Get Started</button>
+    <button class="btn" onclick="window.location.href='/login'">Get Started</button>
 </nav>
 
-<!-- MAIN -->
 <div class="wrapper">
     <div class="card">
 
-        <!-- LEFT -->
         <div class="left">
             <h1>Tell us about your <span>idea</span></h1>
             <p>We’ll help you stay compliant, faster.</p>
@@ -240,32 +247,38 @@ textarea {
                 <div class="icon">👥</div>
                 <p>Connect with compliance specialists</p>
             </div>
-
         </div>
 
-        <!-- RIGHT -->
         <div class="form">
             <h3>Send us a message</h3>
 
-            <form id="form">
-                <input type="text" placeholder="Full Name*" required>
-                <input type="email" placeholder="Email*" required>
+            <form method="POST" action="/contact">
+                <input type="text" name="fullname" placeholder="Full Name*" required>
+                <input type="email" name="email" placeholder="Email*" required>
 
-                <textarea placeholder="Your idea..."></textarea>
+                <textarea name="message" placeholder="Your idea or inquiry...*" required></textarea>
 
-                <select>
-                    <option>Select Inquiry Type</option>
-                    <option>Compliance Help</option>
-                    <option>Startup Registration</option>
-                    <option>Data Privacy</option>
+                <select name="inquiry_type" required>
+                    <option value="" disabled selected>Select Inquiry Type*</option>
+                    <option value="Compliance Help">Compliance Help</option>
+                    <option value="Startup Registration">Startup Registration</option>
+                    <option value="Data Privacy">Data Privacy</option>
+                    <option value="Other">Other</option>
                 </select>
 
                 <div class="drop">
                     Attach file (optional)
                 </div>
 
-                <button class="submit">Submit Inquiry →</button>
-                <div class="success">Message sent successfully 🚀</div>
+                <button type="submit" class="submit">Submit Inquiry →</button>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
             </form>
         </div>
 
@@ -275,14 +288,6 @@ textarea {
         © 2026 RAG.COMPLY | AI Compliance Platform
     </div>
 </div>
-
-<!-- JS -->
-<script>
-document.getElementById("form").addEventListener("submit", function(e){
-    e.preventDefault();
-    document.querySelector(".success").style.display = "block";
-});
-</script>
 
 </body>
 </html>

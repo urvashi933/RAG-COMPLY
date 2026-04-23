@@ -98,6 +98,8 @@ body {
 .main {
     flex:1;
     padding:30px;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .main h1 {
@@ -166,6 +168,7 @@ table {
 th, td {
     padding:10px;
     font-size:14px;
+    text-align: left;
 }
 
 th {
@@ -198,6 +201,11 @@ tr {
     margin-top:20px;
 }
 
+/* Custom Scrollbar for Main Area */
+.main::-webkit-scrollbar { width: 8px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 10px; }
+
 /* Responsive */
 @media(max-width:900px){
     .cards { grid-template-columns:1fr; }
@@ -210,11 +218,9 @@ tr {
 
 <div class="container">
 
-<!-- Sidebar -->
 <aside class="sidebar">
 
 <div class="branding">
-    <!-- YOUR SVG -->
     <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
         <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
@@ -226,76 +232,141 @@ tr {
 </div>
 
 <ul>
-<li class="active">Users</li>
-<li>Query</li>
-<li>Unanswered</li>
+<li class="active">Dashboard</li>
+<li>Users</li>
 <li>Documents</li>
+<li><a href="/logout" style="color: inherit; text-decoration: none;">Logout</a></li>
 </ul>
 
 </aside>
 
-<!-- Main -->
 <main class="main">
 
 <h1>Admin Dashboard</h1>
 
 <div class="cards">
-<div class="card">
-<h3>Users</h3>
-<p class="big" id="users">34</p>
-</div>
+    <div class="card">
+        <h3>Total Users</h3>
+        <p class="big" id="users">34</p>
+    </div>
 
-<div class="card">
-<h3>Unanswered</h3>
-<p class="big">12</p>
-</div>
+    <div class="card">
+        <h3>Unanswered Queries</h3>
+        <p class="big">{{ questions|length }}</p>
+    </div>
 
-<div class="card">
-<h3>Documents</h3>
-<p class="big">128</p>
-</div>
+    <div class="card">
+        <h3>Indexed Documents</h3>
+        <p class="big">{{ documents|length }}</p>
+    </div>
 </div>
 
 <div class="grid">
 
-<div class="box">
-<h2>Unanswered Questions</h2>
-<table>
-<tr><th>Question</th><th>Status</th></tr>
-<tr><td>GDPR policy?</td><td><span class="status unanswered">Unanswered</span></td></tr>
-<tr><td>Data retention?</td><td><span class="status unanswered">Unanswered</span></td></tr>
-</table>
-</div>
+    <div class="box">
+        <h2>Unanswered Questions</h2>
+        <table>
+            <tr>
+                <th>Question</th>
+                <th>Sector</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+            
+            {% for q in questions %}
+            <tr>
+                <td>{{ q.question }}</td>
+                <td>{{ q.sector }}</td>
+                <td>{{ q.timestamp[:10] }}</td> <td><span class="status unanswered">Unanswered</span></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    All queries have been successfully answered! 🎉
+                </td>
+            </tr>
+            {% endfor %}
+            
+        </table>
+    </div>
 
-<div class="box">
-<h2>Recent Queries</h2>
-<table>
-<tr><th>User</th><th>Query</th><th>Status</th></tr>
-<tr><td>John</td><td>Encryption?</td><td><span class="status answered">Done</span></td></tr>
-<tr><td>Alice</td><td>Policies?</td><td><span class="status answered">Done</span></td></tr>
-</table>
-</div>
+    <div class="box">
+        <h2>User Inquiries (From Contact Page)</h2>
+        <table>
+            <tr>
+                <th>User / Email</th>
+                <th>Inquiry Type</th>
+                <th>Message</th>
+                <th>Status</th>
+            </tr>
+            
+            {% for inquiry in inquiries %}
+            <tr>
+                <td>
+                    <strong>{{ inquiry.fullname }}</strong><br>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">{{ inquiry.email }}</span>
+                </td>
+                <td>{{ inquiry.inquiry_type }}</td>
+                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ inquiry.message }}">
+                    {{ inquiry.message }}
+                </td>
+                <td>
+                    {% if inquiry.status == 'Pending' %}
+                        <span class="status unanswered">{{ inquiry.status }}</span>
+                    {% else %}
+                        <span class="status answered">{{ inquiry.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    No recent inquiries from the contact page.
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 </div>
 
 <div class="box full">
-<h2>Documents</h2>
-<table>
-<tr><th>Name</th><th>Type</th></tr>
-<tr><td>Policy.pdf</td><td>Governance</td></tr>
-<tr><td>Security.pdf</td><td>Security</td></tr>
-</table>
+    <h2>System Documents</h2>
+    <table>
+        <tr>
+            <th>Document Name</th>
+            <th>Sector / Category</th>
+        </tr>
+        
+        {% for doc in documents %}
+        <tr>
+            <td>{{ doc.name }}</td>
+            <td>
+                <span style="color: var(--primary-neon); background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">
+                    {{ doc.sector }}
+                </span>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                No compliance documents found in the data folder.
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 
 </main>
 </div>
 
 <script>
+// Mock script to animate the users counter slightly
 setInterval(()=>{
- let el=document.getElementById("users");
- let val=parseInt(el.innerText);
- el.innerText=val+Math.floor(Math.random()*2);
-},4000);
+ let el = document.getElementById("users");
+ let val = parseInt(el.innerText);
+ el.innerText = val + Math.floor(Math.random()*2);
+}, 4000);
 </script>
 
 </body>

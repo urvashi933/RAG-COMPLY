@@ -4,13 +4,14 @@
 # main server file :typos leads to issues in running server
 
 # code to start main server: currently not in root directory rather it's in flask sub-folder
+import os
 from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import datetime
 from utils.rag_pipeline import rag_answer
 from database import init_db, SessionLocal
-from models import QuestionHistory,UnansweredQuestion,User
+from models import QuestionHistory,UnansweredQuestion,User,ContactInquiry
 
 app= Flask(__name__)
 
@@ -123,7 +124,7 @@ def signin():
             session["user_id"]=user.id
             session["user_name"]=user.username
             flash('Login successful!', 'success')
-            return redirect(url_for('rag_assistant'))
+            return redirect(url_for('home'))
         else:
             flash('Invalid credentials.', 'error')
             return redirect(url_for('login'))
@@ -133,13 +134,43 @@ def signin():
 def login():
     return render_template("login.html")
     
-@app.route('/assistant') # assistant page
-@login_required
-def assistant():
-    return render_template("assistant.html")
+# 1. Ensure the assistant route requires login
+# @app.route('/assistant')
+# @login_required
+# def assistant():
+#     return render_template("assistant.html")
 
-@app.route('/contact')  # overview page
+
+
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    if request.method == 'POST':
+        fullname = request.form.get('fullname')
+        email = request.form.get('email')
+        message = request.form.get('message')
+        inquiry_type = request.form.get('inquiry_type')
+
+        db = SessionLocal()
+        new_inquiry = ContactInquiry(
+            fullname=fullname,
+            email=email,
+            message=message,
+            inquiry_type=inquiry_type,
+            timestamp=datetime.utcnow(),
+            status="Pending"
+        )
+        try:
+            db.add(new_inquiry)
+            db.commit()
+            flash('Message sent successfully 🚀', 'success')
+        except Exception as e:
+            db.rollback()
+            flash('Error sending message. Please try again.', 'error')
+        finally:
+            db.close()
+            
+        return redirect(url_for('contact'))
+        
     return render_template("contact.html")
 
 # ---------------- SIGNOUT ----------------
@@ -166,11 +197,28 @@ def rag_assistant():
         sources = result["sources"]
 
     return render_template(
-        "rag_assistant.html",
+        "assistant.html",
         answer=answer,
         sources=sources
     )
 # ---------------- ADMIN ----------------
+def get_local_documents(base_dir="data"):
+    """Scans the data directory and returns just the filenames and sectors."""
+    documents = []
+    sectors = ["legal", "workforce"]
+    
+    for sector in sectors:
+        folder_path = os.path.join(base_dir, sector)
+        if os.path.exists(folder_path):
+            for filename in os.listdir(folder_path):
+                # Only grab supported files
+                if filename.endswith((".pdf", ".docx", ".txt")):
+                    documents.append({
+                        "name": filename,
+                        "sector": sector.capitalize()
+                    })
+    return documents
+
 @admin_bp.route("/admin")
 @login_required
 def view_unanswered():
@@ -180,9 +228,20 @@ def view_unanswered():
         .order_by(UnansweredQuestion.timestamp.desc())
         .all()
     )
+    # Fetch the recent contact inquiries
+    inquiries = (
+        db.query(ContactInquiry)
+        .order_by(ContactInquiry.timestamp.desc())
+        .limit(10) # Get the 10 most recent inquiries
+        .all()
+    )
     db.close()
 
-    return render_template("admin.html", questions=questions)
+    # 3. Fetch the documents from the local folder
+    local_docs = get_local_documents("data")
+
+    # 4. Pass the 'local_docs' list to your HTML template
+    return render_template("admin.html", questions=questions, documents=local_docs, inquiries=inquiries)
 
 app.register_blueprint(admin_bp)
 

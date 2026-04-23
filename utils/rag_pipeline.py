@@ -37,13 +37,14 @@ def rag_answer(query: str, sector: str, user_id: int = None) -> dict:
         if is_definition_query(query):
             prompt = build_prompt([], query)
             answer = generate_answer(prompt)
+            print("query classifier launched")
             return {
                 "answer": answer,
                 "sources": []
             }
-
+        print("next step is log unanswered")
         log_unanswered(query, sector)
-       # print("hi")
+        print("log unanswered called")
         return {
             "answer": "Answer not found in the provided documents.",
             "sources": []
