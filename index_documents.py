@@ -6,7 +6,11 @@ from utils.faiss_indexer import build_faiss_index
 
 SECTORS = {
     "legal": "data/legal",
-    "workforce": "data/workforce"
+    "workforce": "data/workforce",
+    "branding": "data/branding",
+    "infrastructure": "data/infrastructure",
+    "promotion": "data/promotion",
+    "property_dealing": "data/property_dealing",
 }
 
 for sector, folder_path in SECTORS.items():

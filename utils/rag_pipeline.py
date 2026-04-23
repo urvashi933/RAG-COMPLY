@@ -5,7 +5,7 @@ from utils.logger import log_question, log_unanswered
 from utils.query_classifier import is_definition_query
 
 
-SECTORS=["legal","workforce"]
+SECTORS=["legal","workforce","branding","infrastructure","promotion","property_dealing"]
 def rag_answer(query: str, sector: str, user_id: int = None) -> dict:
     """
     Central RAG pipeline function.

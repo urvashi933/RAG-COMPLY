@@ -122,8 +122,15 @@ def signin():
         user = db.query(User).filter(User.email == email).first()
         db.close()
         if user and check_password_hash(user.password, password):
-            session["user_id"]=user.id
-            session["user_name"]=user.username
+            session["user_id"] = user.id
+            session["user_name"] = user.username
+            
+            # Check if user is admin (example condition)
+            if user.email == 'srivastavaurvashi933@gmail.com':
+                session["is_admin"] = True
+                flash('Welcome back, Admin!', 'success')
+                return redirect('/admin')
+            
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
@@ -216,6 +223,10 @@ def get_local_documents(base_dir="data"):
 @admin_bp.route("/admin")
 @login_required
 def view_unanswered():
+    if not session.get('is_admin'):
+        flash('Unauthorized access. Admin privileges required.', 'error')
+        return redirect(url_for('home'))
+    
     db = SessionLocal()
     questions = (
         db.query(UnansweredQuestion)
