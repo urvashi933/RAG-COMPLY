@@ -8,6 +8,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for,jsonify,Blueprint,flash,session
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash 
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from utils.rag_pipeline import rag_answer
 from database import init_db, SessionLocal
@@ -235,6 +236,34 @@ def view_unanswered():
 
     # 4. Pass the 'local_docs' list to your HTML template
     return render_template("admin.html", questions=questions, documents=local_docs, inquiries=inquiries)
+
+@admin_bp.route("/upload", methods=["POST"])
+@login_required
+def upload_file():
+    if 'file' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('admin.view_unanswered'))
+    
+    file = request.files['file']
+    sector = request.form.get('sector')
+
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('admin.view_unanswered'))
+    
+    if file and sector:
+        filename = secure_filename(file.filename)
+        # Ensure the sector folder exists
+        folder_path = os.path.join("data", sector)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            
+        file.save(os.path.join(folder_path, filename))
+        flash(f'File "{filename}" uploaded successfully to {sector}!', 'success')
+        return redirect(url_for('admin.view_unanswered'))
+    
+    flash('Upload failed', 'error')
+    return redirect(url_for('admin.view_unanswered'))
 
 app.register_blueprint(admin_bp)
 
