@@ -173,6 +173,10 @@ th, td {
 
 th {
     color:var(--primary-neon);
+    position: sticky;
+    top: 0;
+    background: #111; /* Dark solid background for sticky header */
+    z-index: 10;
 }
 
 tr {
@@ -205,6 +209,29 @@ tr {
 .main::-webkit-scrollbar { width: 8px; }
 .main::-webkit-scrollbar-track { background: transparent; }
 .main::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 10px; }
+
+.scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(16,185,129,0.2);
+    border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(16,185,129,0.4);
+}
 
 /* Responsive */
 @media(max-width:900px){
@@ -377,67 +404,71 @@ tr {
 
     <div class="box">
         <h2>Unanswered Questions</h2>
-        <table>
-            <tr>
-                <th>Question</th>
-                <th>Sector</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-            
-            {% for q in questions %}
-            <tr>
-                <td>{{ q.question }}</td>
-                <td>{{ q.sector }}</td>
-                <td>{{ q.timestamp[:10] }}</td> <td><span class="status unanswered">Unanswered</span></td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                    All queries have been successfully answered! 🎉
-                </td>
-            </tr>
-            {% endfor %}
-            
-        </table>
+        <div class="scroll-container">
+            <table>
+                <tr>
+                    <th>Question</th>
+                    <th>Sector</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                
+                {% for q in questions %}
+                <tr>
+                    <td>{{ q.question }}</td>
+                    <td>{{ q.sector }}</td>
+                    <td>{{ q.timestamp[:10] }}</td> <td><span class="status unanswered">Unanswered</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                        All queries have been successfully answered! 🎉
+                    </td>
+                </tr>
+                {% endfor %}
+                
+            </table>
+        </div>
     </div>
 
     <div class="box">
         <h2>User Inquiries (From Contact Page)</h2>
-        <table>
-            <tr>
-                <th>User / Email</th>
-                <th>Inquiry Type</th>
-                <th>Message</th>
-                <th>Status</th>
-            </tr>
-            
-            {% for inquiry in inquiries %}
-            <tr>
-                <td>
-                    <strong>{{ inquiry.fullname }}</strong><br>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">{{ inquiry.email }}</span>
-                </td>
-                <td>{{ inquiry.inquiry_type }}</td>
-                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ inquiry.message }}">
-                    {{ inquiry.message }}
-                </td>
-                <td>
-                    {% if inquiry.status == 'Pending' %}
-                        <span class="status unanswered">{{ inquiry.status }}</span>
-                    {% else %}
-                        <span class="status answered">{{ inquiry.status }}</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                    No recent inquiries from the contact page.
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="scroll-container">
+            <table>
+                <tr>
+                    <th>User / Email</th>
+                    <th>Inquiry Type</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                </tr>
+                
+                {% for inquiry in inquiries %}
+                <tr>
+                    <td>
+                        <strong>{{ inquiry.fullname }}</strong><br>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">{{ inquiry.email }}</span>
+                    </td>
+                    <td>{{ inquiry.inquiry_type }}</td>
+                    <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ inquiry.message }}">
+                        {{ inquiry.message }}
+                    </td>
+                    <td>
+                        {% if inquiry.status == 'Pending' %}
+                            <span class="status unanswered">{{ inquiry.status }}</span>
+                        {% else %}
+                            <span class="status answered">{{ inquiry.status }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                        No recent inquiries from the contact page.
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 
 </div>
@@ -468,29 +499,31 @@ tr {
         <button type="submit" class="btn-upload">Upload Document</button>
     </form>
 
-    <table>
-        <tr>
-            <th>Document Name</th>
-            <th>Sector / Category</th>
-        </tr>
-        
-        {% for doc in documents %}
-        <tr>
-            <td>{{ doc.name }}</td>
-            <td>
-                <span style="color: var(--primary-neon); background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">
-                    {{ doc.sector }}
-                </span>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                No compliance documents found in the data folder.
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="scroll-container">
+        <table>
+            <tr>
+                <th>Document Name</th>
+                <th>Sector / Category</th>
+            </tr>
+            
+            {% for doc in documents %}
+            <tr>
+                <td>{{ doc.name }}</td>
+                <td>
+                    <span style="color: var(--primary-neon); background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">
+                        {{ doc.sector }}
+                    </span>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    No compliance documents found in the data folder.
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </div>
 
 </main>
