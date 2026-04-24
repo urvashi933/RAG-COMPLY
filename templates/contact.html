@@ -66,6 +66,20 @@ nav {
     color: black;
     border: none;
     cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn:hover {
+    box-shadow: 0 0 15px var(--glow);
+    transform: scale(1.05);
 }
 
 /* ===== MAIN CARD ===== */
@@ -219,11 +233,19 @@ textarea {
     <div class="nav-links">
         <a href="/">Home</a>
         <a href="/#features">Features</a>
+        <a href="/#services">Services</a>
         <a href="/#workflow">Workflow</a>
         <a href="/aboutUs">About Us</a>
         <a href="/contact" class="active">Contact</a>
     </div>
-    <button class="btn" onclick="window.location.href='/rag'">Get Started</button>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        {% if session.get('user_id') %}
+            <a href="/logout" class="btn btn-outline">Logout</a>
+        {% else %}
+            <a href="/login" class="btn btn-outline">Login</a>
+        {% endif %}
+        <button class="btn" onclick="window.location.href='/rag'">Get Started</button>
+    </div>
 </nav>
 
 <div class="wrapper">
