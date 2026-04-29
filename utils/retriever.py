@@ -1,9 +1,8 @@
 import faiss
-import pickle
+import pickle # Added for metadata handling or joblib if you prefer for text metadata
 import os
 import numpy as np
 from utils.embedding import get_embedding
-
 
 SIMILARITY_THRESHOLD = 1.0  # tune if needed
 
@@ -12,8 +11,8 @@ def load_faiss_index(sector):
     index_path = f"vector_store/{sector}_faiss"
     index = faiss.read_index(os.path.join(index_path, "index.faiss"))
 
-    with open(os.path.join(index_path, "metadata.pkl"), "rb") as f:
-        metadata = pickle.load(f)
+    with open(os.path.join(index_path, "metadata.pkl"), "rb") as f: # Load metadata for retrieval
+        metadata = pickle.load(f) #pickle load returns a list of dicts, each dict has keys: sector, document, chunk_id, source, text
 
     return index, metadata
 
