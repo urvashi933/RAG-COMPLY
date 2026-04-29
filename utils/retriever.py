@@ -24,13 +24,13 @@ def retrieve_chunks(query, sector, top_k=3):
 
     distances, indices = index.search(query_embedding, top_k)
 
-    # 🔴 TEMP DEBUG PRINTS (HERE ONLY)
+    # TEMP DEBUG PRINTS (HERE ONLY)
     print("DEBUG distances:", distances)
     print("DEBUG indices:", indices)
 
     results = []
 
-    # 🔥 THRESHOLD FILTER HERE 🔥
+    # THRESHOLD FILTER HERE 
     for score, idx in zip(distances[0], indices[0]):
 
         if idx == -1:
