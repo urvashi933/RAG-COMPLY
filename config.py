@@ -1,6 +1,10 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Get your key from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY = "AIzaSyDvOTUOQnYrip-2cRV2Y5s5WUdhNgW2at4"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 # AI Model Configuration
 EMBEDDING_MODEL = "all-MiniLM-L6-v2" # High accuracy embedding
 GENERATIVE_MODEL = "gemini-2.5-flash-lite" # Fast and smart generation

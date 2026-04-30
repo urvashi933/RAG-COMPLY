@@ -78,11 +78,17 @@ def signup():
             return redirect(url_for('login'))
 
         db = SessionLocal()
-        existing_user = db.query(User).filter(User.email == email).first()
+        existing_user_email = db.query(User).filter(User.email == email).first()
+        existing_user_username = db.query(User).filter(User.username == username).first()
 
-        if existing_user:
+        if existing_user_email:
             db.close()
             flash('Email already registered. Please login.', 'error')
+            return redirect(url_for('login'))
+
+        if existing_user_username:
+            db.close()
+            flash('Username already taken. Please choose another.', 'error')
             return redirect(url_for('login'))
 
         hashed_password = generate_password_hash(password)
@@ -112,21 +118,22 @@ def signup():
 def signin():
     if request.method == 'POST':
         email = request.form.get('email')
+        username = request.form.get('username')
         password = request.form.get('password')
 
-        if not (email and password):
-            flash('Please provide email and password.', 'error')
+        if not (email and username and password):
+            flash('Please provide email, username, and password.', 'error')
             return redirect(url_for('login'))
 
         db = SessionLocal()
-        user = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.email == email, User.username == username).first()
         db.close()
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
             session["user_name"] = user.username
             
             # Check if user is admin (example condition)
-            if user.email == 'srivastavaurvashi933@gmail.com':
+            if user.email == 'srivastavaurvashi933@gmail.com' and user.username == 'Spongebob':
                 session["is_admin"] = True
                 flash('Welcome back, Admin!', 'success')
                 return redirect('/admin')
