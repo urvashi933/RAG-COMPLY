@@ -127,7 +127,7 @@ Below are the screenshots of the working project:
 
 ### RAG Assistant Page 
 <img width="49%" alt="Screenshot (395)" src="https://github.com/user-attachments/assets/b831e3eb-7145-47b0-bf64-a5268f6f3cc3" />
-<img width="1920" height="1080" alt="Screenshot (408)" src="https://github.com/user-attachments/assets/73b8b115-923e-44e4-bb9e-f282b48fca1d" />
+<img width="49%" alt="Screenshot (408)" src="https://github.com/user-attachments/assets/73b8b115-923e-44e4-bb9e-f282b48fca1d" />
 
 
 
